@@ -1,0 +1,199 @@
+﻿@page "/partidos"
+@attribute [Authorize(FestivalPermissions.Partidos.Default)]
+@using Festival.Permissions
+@using Microsoft.AspNetCore.Authorization
+@using Volo.Abp.Application.Dtos
+@using Festival.Partidos
+@using Festival.Equipos
+@using Festival.Localization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Components.Web
+@inject IStringLocalizer<FestivalResource> L
+@inject AbpBlazorMessageLocalizerHelper<FestivalResource> LH
+@inject IPartidoAppService PartidoAppService
+@inherits FestivalComponentBase
+
+<Card>
+    <CardHeader>
+    <Row Class="justify-content-between">
+        <Column ColumnSize="ColumnSize.IsAuto">
+            <h2>Partidos</h2>
+        </Column>
+        <Column ColumnSize="ColumnSize.IsAuto">
+            @if (PuedeCrearPartido)
+            {
+                <Button Color="Color.Primary"
+                Clicked="@ShowCreateModal">Nuevo Partido</Button> 
+            }   
+        </Column>
+    </Row>
+    </CardHeader>
+    <CardBody>
+        <DataGrid TItem="PartidoDto"
+                  Data="partidos"
+                  ReadData="OnDataGridReadAsync"
+                  ShowPager="true"
+                  PageSize="6"
+                  Responsive="true"
+                  TotalItems="totalCount">
+            <DataGridColumns>
+                <DataGridColumn TItem="PartidoDto"
+                                Field="@nameof(PartidoDto.Grupo)"
+                                Caption="Grupo">                               
+                </DataGridColumn>
+                <DataGridColumn TItem="PartidoDto"
+                                Field="@nameof(PartidoDto.EquipoA)"
+                                Caption="">
+                                <DisplayTemplate>
+                                        <Figure Size="FigureSize.Is24x24">
+                                            <FigureImage Source="@ObtenerBandera(context.SiglasEquipoA)"   Rounded/>
+                                        </Figure>
+                                        @context.EquipoA
+                                </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="PartidoDto"
+                                Field="@nameof(PartidoDto.EquipoA)"
+                                Caption="">
+                                <DisplayTemplate>
+                                        <Figure Size="FigureSize.Is24x24">
+                                            <FigureImage Source="@ObtenerBandera(context.SiglasEquipoB)"   Rounded/>
+                                        </Figure>
+                                        @context.EquipoB
+                                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="PartidoDto"
+                                Caption="Resultado">
+                            <DisplayTemplate>
+                                @GetResultado(context.Id)
+                            </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="PartidoDto"
+                                Field="@nameof(PartidoDto.FechaPartido)"
+                                Caption="Fecha">
+                </DataGridColumn>
+                <DataGridEntityActionsColumn TItem="PartidoDto" @ref="@EntityActionsColumn">
+                    <DisplayTemplate>
+                        <EntityActions TItem="PartidoDto" EntityActionsColumn="@EntityActionsColumn">
+                            <EntityAction TItem="PartidoDto"
+                                          Clicked="() => OpenCargarResultadoModal(context)" 
+                                          Visible=PuedeCargarResultados
+                                          Text="Cargar resultados">
+                            </EntityAction>
+                        </EntityActions>
+                    </DisplayTemplate>
+                </DataGridEntityActionsColumn>
+
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
+<Modal @ref="@modalCreateRef">
+    <ModalContent IsCentered="true">
+        <Form>
+            <ModalHeader>
+                <ModalTitle>Nuevo Partido</ModalTitle>
+                <CloseButton Clicked="@HideCreateModal"/>
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="@CreateValidationsRef" Model="@NuevoPartido" ValidateOnLoad="false">
+                    <Validation MessageLocalizer="@LH.Localize"> 
+                        <Field>
+                            <FieldLabel>Equipo A</FieldLabel>
+                            <Select TValue="Guid" @bind-SelectedValue="@NuevoPartido.EquipoAId" @onchange="ActualizarListaB">
+                                <SelectItem TValue="Guid" Value="Guid.Empty">Selecciona un equipo</SelectItem>
+                                @foreach (var equipo in listaEquipos)
+                                {
+                                    <SelectItem TValue="Guid" Value="@equipo.Id">
+                                        @equipo.Pais
+                                    </SelectItem>
+                                }
+                            </Select>
+                        </Field>
+                    </Validation> 
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>Equipo B</FieldLabel>
+                            <Select TValue="Guid" @bind-SelectedValue="@NuevoPartido.EquipoBId">
+                                <SelectItem TValue="Guid" Value="Guid.Empty">Selecciona un equipo</SelectItem>
+                                @foreach (var equipo in listaEquiposB)
+                                {
+                                    <SelectItem TValue="Guid" Value=@equipo.Id>
+                                       @equipo.Pais
+                                    </SelectItem>
+                                }
+
+                            </Select>
+                        </Field>
+                    </Validation>
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>Fecha</FieldLabel>
+                            <DateEdit TValue="DateTime" InputMode="DateInputMode.DateTime" @bind-Date="@NuevoPartido.FechaPartido">
+                            <Feedback>
+                                    <ValidationError/>
+                            </Feedback>
+                            </DateEdit>
+                        </Field>
+                    </Validation>
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary"
+                        Clicked="HideCreateModal">@L["Cancel"]</Button>
+                <Button Color="Color.Primary"
+                        Type="@ButtonType.Submit"
+                        PreventDefaultOnSubmit="true"
+                        Clicked="AgregarAsync">@L["Save"]</Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+<Modal @ref="@modalCargarResultadoRef">
+    <ModalContent IsCentered="true">
+        <Form>
+            <ModalHeader>
+                <ModalTitle>Cargar resultados</ModalTitle>
+                <CloseButton Clicked="@HideCargarResultadoModal"/>
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="@CreateValidationsRef" Model="@partido" ValidateOnLoad="false">
+                    <Field>
+                         <Row Class="justify-content-between">
+                            <Column ColumnSize="ColumnSize.Is4" Class="justify-content-end">
+                                    <Figure Size="FigureSize.Is24x24" Class="d-flex">
+                                         <FigureImage Source="@ObtenerBandera(partido.SiglasEquipoA)"   Rounded/>
+                                         <p>@partido.EquipoA</p> 
+                                     </Figure>
+                            </Column>
+
+                            <Column ColumnSize="ColumnSize.Is2">
+                               <Field>
+                                    <NumericEdit @bind-Value="@partido.ResultadoEquipoA"/>
+                                </Field>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is2">
+                                <Field>
+                                    <NumericEdit @bind-Value="@partido.ResultadoEquipoB"/>
+                                </Field>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is4" Class="justify-content-start">
+                                <Figure Size="FigureSize.Is24x24" Class="d-flex">
+                                     <FigureImage Source="@ObtenerBandera(partido.SiglasEquipoB)"   Rounded/>
+                                     <p>@partido.EquipoB</p> 
+                                 </Figure>
+                            </Column>
+                        </Row>
+                    </Field>
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary"
+                        Clicked="HideCargarResultadoModal">@L["Cancel"]</Button>
+                <Button Color="Color.Primary"
+                        Type="@ButtonType.Submit"
+                        PreventDefaultOnSubmit="true"
+                        Clicked="CargarResultado">@L["Save"]</Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>

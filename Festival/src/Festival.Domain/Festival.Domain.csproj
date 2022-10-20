@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\common.props" />
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>Festival</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Festival.Domain.Shared\Festival.Domain.Shared.csproj" />
+  	<PackageReference Include="Volo.Abp.LeptonTheme.Management.Domain" Version="6.0.0" />
+</ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.Emailing" Version="6.0.0" />
+    <PackageReference Include="Volo.Abp.PermissionManagement.Domain.Identity" Version="6.0.0" />
+    <PackageReference Include="Volo.Abp.OpenIddict.Domain" Version="6.0.0" />
+    <PackageReference Include="Volo.Abp.PermissionManagement.Domain.OpenIddict" Version="6.0.0" />
+    <PackageReference Include="Volo.Abp.BackgroundJobs.Domain" Version="6.0.0" />
+    <PackageReference Include="Volo.Abp.AuditLogging.Domain" Version="6.0.0" />
+    <PackageReference Include="Volo.Abp.FeatureManagement.Domain" Version="6.0.0" />
+    <PackageReference Include="Volo.Abp.SettingManagement.Domain" Version="6.0.0" />
+    <PackageReference Include="Volo.Abp.BlobStoring.Database.Domain" Version="6.0.0" />
+    <PackageReference Include="Volo.Abp.Identity.Pro.Domain" Version="6.0.0" />
+    <PackageReference Include="Volo.Abp.LanguageManagement.Domain" Version="6.0.0" />
+    <PackageReference Include="Volo.Saas.Domain" Version="6.0.0" />
+    <PackageReference Include="Volo.Abp.TextTemplateManagement.Domain" Version="6.0.0" />
+    <PackageReference Include="Volo.Abp.Commercial.SuiteTemplates" Version="6.0.0" />
+    <PackageReference Include="Volo.Abp.Gdpr.Domain" Version="6.0.0" />
+  </ItemGroup>
+
+</Project>

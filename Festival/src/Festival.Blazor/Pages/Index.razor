@@ -1,0 +1,186 @@
+﻿@page "/"
+@inherits FestivalComponentBase
+@using Volo.Abp.Users
+@inject ICurrentUser CurrentUser
+@using Volo.Abp.Application.Dtos
+@using Festival.Apuestas
+@using Festival.Predicciones
+@using Festival.Partidos
+@using Volo.Abp.AspNetCore.Components.Web
+@inject IApuestaAppService ApuestaAppService
+@using Festival.Blazor.Components
+
+@if (CurrentUser.IsAuthenticated)
+{
+    <Row Class="justify-content-between">
+    <Column ColumnSize="ColumnSize.Is4.OnWidescreen.Is12.OnMobile" >
+        <Row Class="justify-content-between">
+            <Column ColumnSize="ColumnSize.Is12">
+                <Card>
+                    <CardText TextAlignment="TextAlignment.Center">
+                        <h1>Premio</h1>
+                        <p>acumulado a la fecha</p>
+                        <h1>1er Lugar: $ @premio.PrimerLugar</h1>
+                        <h2>2do Lugar: $ @premio.SegundaLugar</h2>
+                        <h3>3er Lugar: $ @premio.TercerLugar</h3>
+                    </CardText>
+                </Card>
+            </Column>
+        </Row>
+        <Row Class="justify-content-between">
+            <Column ColumnSize="ColumnSize.Is12">
+                <Card>
+                    <CardHeader>
+                        <h2>Partidos de HOY</h2>
+                    </CardHeader>
+                    <CardBody>
+                        <DataGrid TItem="PartidoDto"
+                          Data="partidos"
+                          ReadData="GetPartidosDelDia"
+                          ShowPager="true"
+                          PageSize="10"
+                          Responsive="true">
+                            <DataGridColumn TItem="PartidoDto"
+                                Field="@nameof(PartidoDto.EquipoA)"
+                                Caption="Equipo A">
+                                <DisplayTemplate>
+                                        <Figure Size="FigureSize.Is24x24">
+                                            <FigureImage Source="@ObtenerBandera(context.SiglasEquipoA)"   Rounded/>
+                                        </Figure>
+                                        @context.EquipoA
+                                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="PartidoDto"
+                                Field="@nameof(PartidoDto.EquipoB)"
+                                Caption="Equipo B">
+                                <DisplayTemplate>
+                                        <Figure Size="FigureSize.Is24x24">
+                                            <FigureImage Source="@ObtenerBandera(context.SiglasEquipoB)"   Rounded/>
+                                        </Figure>
+                                        @context.EquipoB
+                                </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="PartidoDto"
+                                Field="@nameof(PartidoDto.FechaPartido)"
+                                Caption="Fecha">
+                                <DisplayTemplate>
+                                    @context.FechaPartido.ToShortTimeString()
+                                </DisplayTemplate>
+                </DataGridColumn>
+                        </DataGrid>
+                    </CardBody>
+                </Card>
+            </Column>
+        </Row>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is8.OnWidescreen.Is12.OnMobile">
+        <Card>
+            <CardHeader>
+                <Row Class="justify-content-between">
+                    <Column ColumnSize="ColumnSize.IsAuto">
+                        <h2>Ranking</h2>
+                    </Column>
+                </Row>
+            </CardHeader>
+            <CardBody>
+                <DataGrid TItem="ApuestaDto"
+                  Data="apuestas"
+                  ReadData="OnDataGridReadAsync"
+                  ShowPager="true"
+                  PageSize="10"
+                  Responsive="true">
+                    <DataGridColumns>
+                        <DataGridEntityActionsColumn TItem="ApuestaDto" @ref="@EntityActionsColumn">
+                            <DisplayTemplate>
+                                <EntityActions TItem="ApuestaDto" EntityActionsColumn="@EntityActionsColumn">
+                                    <EntityAction TItem="ApuestaDto"
+                                          Clicked="() => OpenConsultarApuestaModal(context)"  
+                                          Text="Ver detalle">
+                                    </EntityAction>
+                                </EntityActions>
+                            </DisplayTemplate>
+                        </DataGridEntityActionsColumn>
+                        <DataGridColumn TItem="ApuestaDto"
+                                Field="@nameof(ApuestaDto.Alias)"
+                                Caption="Alias">
+                        </DataGridColumn>
+                        <DataGridColumn TItem="ApuestaDto"
+                                Field="@nameof(ApuestaDto.NombreUsuario)"
+                                Caption="Usuario">
+                        </DataGridColumn>
+                        <DataGridColumn TItem="ApuestaDto"
+                                Field="@nameof(ApuestaDto.PuntosObtenidos)"
+                                Caption="Puntos Obtenidos">
+                        </DataGridColumn>
+                    </DataGridColumns>
+                </DataGrid>
+            </CardBody>
+        </Card>
+        <Modal @ref="ConsultarApuestaRef">
+            <ModalContent Centered Size="ModalSize.ExtraLarge">
+                <ModalHeader>
+                    <ModalTitle>Apuesta: @detalleApuesta.Alias</ModalTitle>
+                    <CloseButton Clicked="CloseConsultarApuestaModal" />
+                </ModalHeader>
+                <ModalBody> 
+                    <Field>
+                        <FieldLabel><strong>Total de puntos obtenidos:</strong> @detalleApuesta.PuntosObtenidos </FieldLabel>
+                    </Field>
+                    <DataGrid TItem="PrediccionDto"
+                      Data="detalleApuesta.Predicciones"
+                      ShowPager="true"
+                      PageSize="10">
+                        <DataGridColumns>
+                            <DataGridColumn TItem="PrediccionDto"
+                                    Caption="Equipo A">
+                                <DisplayTemplate>
+                                    <Figure Size="FigureSize.Is24x24">
+                                        <FigureImage Source="@ObtenerBandera(context.Partido.SiglasEquipoA)"   Rounded/>
+                                    </Figure>
+                                    @context.Partido.EquipoA
+                                </DisplayTemplate>
+                            </DataGridColumn>
+                            <DataGridColumn TItem="PrediccionDto"
+                                    Caption="Equipo B">
+                                <DisplayTemplate>
+                                    <Figure Size="FigureSize.Is24x24">
+                                        <FigureImage Source="@ObtenerBandera(context.Partido.SiglasEquipoB)"   Rounded/>
+                                    </Figure>
+                                    @context.Partido.EquipoB
+                                </DisplayTemplate>
+                            </DataGridColumn>
+                            <DataGridColumn TItem="PrediccionDto"
+                                    Caption="Resultado">
+                                <DisplayTemplate>
+                                    @GetResultado(context.Partido)
+                                </DisplayTemplate>
+                            </DataGridColumn>
+                            <DataGridColumn TItem="PrediccionDto"
+                                    Caption="Predicción">
+                                <DisplayTemplate>
+                                    @context.PrediccionResultadoEquipoA - @context.PrediccionResultadoEquipoB
+                                </DisplayTemplate>
+                            </DataGridColumn> 
+                            <DataGridColumn TItem="PrediccionDto"
+                                    Field="@nameof(PrediccionDto.PuntosObtenidos)"
+                                    Caption="Puntos obtenidos">
+                            </DataGridColumn>
+                        </DataGridColumns>
+                    </DataGrid>
+                </ModalBody>
+            </ModalContent>
+        </Modal>
+        </Column>
+     </Row>
+
+}
+else
+{
+    <Card>
+        <CardImage Display="Display.Block.OnFullHD.Block.OnTablet.None.OnMobile" Source="images/banner.png" Alt="Placeholder image">
+            </CardImage>
+            <CardImage Display="Display.None.OnFullHD.None.OnTablet.Block.OnMobile" Source="images/banner-movil.png" Alt="Placeholder image">
+        </CardImage>
+    </Card>
+}
+

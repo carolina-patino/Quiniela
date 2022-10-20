@@ -1,0 +1,220 @@
+﻿@page "/mis-quinielas"
+@using Volo.Abp.Application.Dtos
+@using Festival.Apuestas
+@using Festival.Predicciones
+@using Festival.Localization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Components.Web
+@inject IStringLocalizer<FestivalResource> L
+@inject AbpBlazorMessageLocalizerHelper<FestivalResource> LH
+@inject IApuestaAppService ApuestaAppService
+@inherits FestivalComponentBase
+
+<Card>
+    <CardHeader>
+    <Row Class="justify-content-between">
+        <Column ColumnSize="ColumnSize.IsAuto">
+            <h2>Mis Quinielas</h2>
+        </Column>
+        <Column ColumnSize="ColumnSize.IsAuto">
+         @if (PuedeCrearApuesta)
+         {
+            <Button Color="Color.Primary"
+            Clicked="@ShowCreateModal">Agregar quiniela</Button>
+          }
+        </Column>
+    </Row>
+    </CardHeader>
+    <CardBody>
+        <DataGrid TItem="ApuestaDto"
+                  Data="listaApuestas"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  PageSize="10"
+                  Responsive="true">
+            <DataGridColumns>
+                <DataGridColumn TItem="ApuestaDto"
+                                Field="@nameof(ApuestaDto.Alias)"
+                                Caption="Alias">
+                </DataGridColumn>
+                <DataGridColumn TItem="ApuestaDto"
+                                Field="@nameof(ApuestaDto.CreationTime)"
+                                Caption="Fecha">
+                </DataGridColumn>
+                <DataGridColumn TItem="ApuestaDto"
+                                Field="@nameof(ApuestaDto.PuntosObtenidos)"
+                                Caption="Puntos obtenidos">
+                </DataGridColumn>
+                <DataGridEntityActionsColumn TItem="ApuestaDto" @ref="@EntityActionsColumn">
+                    <DisplayTemplate>
+                        <EntityActions TItem="ApuestaDto" EntityActionsColumn="@EntityActionsColumn">
+                            <EntityAction TItem="ApuestaDto"
+                                          Clicked="() => OpenConsultarApuestaModal(context)"
+                                          Text="Ver detalle">
+                            </EntityAction>
+                            <EntityAction TItem="ApuestaDto"
+                                          Clicked="() => OpenEditarApuestaModal(context)"
+                                          Visible=PuedeEditarApuesta
+                                          Text="Editar quiniela">
+                            </EntityAction>
+                        </EntityActions>
+                    </DisplayTemplate>
+                </DataGridEntityActionsColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
+
+<Modal @ref="modalCreateRef">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>Agregar quiniela</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                    <FieldLabel>Alias</FieldLabel>
+                    <TextEdit @bind-Text="@NuevaApuesta.Alias"/>
+            </Field>
+             @foreach (var prediccion in predicciones)
+             {
+             <Row Class="justify-content-between">
+                <Column ColumnSize="ColumnSize.Is4">
+                       <Figure Size="FigureSize.Is24x24" Class="d-flex">
+                            <FigureImage Source="@ObtenerBandera(prediccion.SiglasEquipoA)"   Rounded/>
+                            <p>@prediccion.EquipoA</p> 
+                       </Figure>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is2">
+                    <Field>
+                        <NumericEdit @bind-Value="@prediccion.PrediccionResultadoEquipoA"/>
+                    </Field>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is2">
+                    <Field>
+                        <NumericEdit @bind-Value="@prediccion.PrediccionResultadoEquipoB"/>
+                    </Field>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is4">
+                       <Figure Size="FigureSize.Is24x24" Class="d-flex">
+                            <FigureImage Source="@ObtenerBandera(prediccion.SiglasEquipoB)"   Rounded/>
+                            <p>@prediccion.EquipoB</p> 
+                       </Figure>
+                </Column>
+             </Row>
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@HideCreateModal">Cerrar</Button>
+            <Button Color="Color.Primary" Clicked="AgregarAsync">Guardar</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+<Modal @ref="ConsultarApuestaRef">
+    <ModalContent Centered Size="ModalSize.ExtraLarge">
+        <ModalHeader>
+            <ModalTitle>Apuesta: @detalleApuesta.Alias</ModalTitle>
+            <CloseButton Clicked="CloseConsultarApuestaModal" />
+        </ModalHeader>
+        <ModalBody> 
+            <Field>
+                <FieldLabel>Total de puntos obtenidos: @detalleApuesta.PuntosObtenidos </FieldLabel>
+            </Field>
+            <DataGrid TItem="PrediccionDto"
+                      Data="detalleApuesta.Predicciones"
+                      TotalItems="TotalCount"
+                      ShowPager="true"
+                      PageSize="10">
+                <DataGridColumns>
+                    <DataGridColumn TItem="PrediccionDto"
+                                    Caption="Equipo A">
+                                    <DisplayTemplate>
+                                        <Figure Size="FigureSize.Is24x24">
+                                            <FigureImage Source="@ObtenerBandera(context.Partido.SiglasEquipoA)"   Rounded/>
+                                        </Figure>
+                                        @context.Partido.EquipoA
+                                    </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="PrediccionDto"
+                                    Caption="Equipo B">
+                                    <DisplayTemplate>
+                                        <Figure Size="FigureSize.Is24x24">
+                                            <FigureImage Source="@ObtenerBandera(context.Partido.SiglasEquipoB)"   Rounded/>
+                                        </Figure>
+                                        @context.Partido.EquipoB
+                                    </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="PrediccionDto"
+                                    Caption="Resultado">
+                                    <DisplayTemplate>
+                                         @GetResultado(context.Partido)
+                                    </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="PrediccionDto"
+                                    Caption="Predicción">
+                                    <DisplayTemplate>
+                                        @context.PrediccionResultadoEquipoA - @context.PrediccionResultadoEquipoB
+                                    </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="PrediccionDto"
+                                    Field="@nameof(PrediccionDto.PuntosObtenidos)"
+                                    Caption="Puntos obtenidos">
+                    </DataGridColumn>
+                </DataGridColumns>
+                 </DataGrid>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+<Modal @ref="EditarApuestaRef">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>Editar apuesta</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                    <FieldLabel>Alias</FieldLabel>
+                    <TextEdit @bind-Text="@editarApuesta.Alias"/>
+            </Field>
+            @if (editarApuesta.Predicciones != null)
+            {
+                @foreach (var prediccion in editarApuesta.Predicciones)
+                {
+                    <Row Class="justify-content-between">
+                        <Column ColumnSize="ColumnSize.Is4">
+                            <Figure Size="FigureSize.Is24x24" Class="d-flex">
+                                <FigureImage Source="@ObtenerBandera(prediccion.Partido.SiglasEquipoA)"   Rounded/>
+                                <p>@prediccion.Partido.EquipoA</p> 
+                            </Figure>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is2">
+                            <Field>
+                                <NumericEdit @bind-Value="@prediccion.PrediccionResultadoEquipoA"/>
+                            </Field>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is2">
+                            <Field>
+                                <NumericEdit @bind-Value="@prediccion.PrediccionResultadoEquipoB"/>
+                            </Field>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is4">
+                            <Figure Size="FigureSize.Is24x24" Class="d-flex">
+                                <FigureImage Source="@ObtenerBandera(prediccion.Partido.SiglasEquipoB)"   Rounded/>
+                                <p>@prediccion.Partido.EquipoB</p> 
+                            </Figure>
+                        </Column>
+                    </Row>
+                }
+
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@CloseEditarApuestaModal">Cerrar</Button>
+            <Button Color="Color.Primary" Clicked="EditarApuesta">Guardar</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
