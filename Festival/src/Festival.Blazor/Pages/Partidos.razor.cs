@@ -28,6 +28,8 @@ namespace Festival.Blazor.Pages
         private Modal modalCreateRef;
         private Modal modalCargarResultadoRef;
 
+        private int PageSize { get; } = LimitedResultRequestDto.DefaultMaxResultCount;
+
         private readonly IPartidoAppService _partidoAppService;
         private readonly IEquipoAppService _equipoAppService;
         private readonly IApuestaAppService _apuestaAppService;
@@ -61,8 +63,6 @@ namespace Festival.Blazor.Pages
             _equipoAppService = equipoAppService;
             _uiNotificationService = uiNotificationService;
             _prediccionAppService = prediccionAppService;
-            _prediccionAppService = prediccionAppService;
-
         }
         protected override async Task OnInitializedAsync()
         {
@@ -80,8 +80,8 @@ namespace Festival.Blazor.Pages
         private async Task GetPartidos()
         {
             var result = await _partidoAppService.GetPartidosAsync();
-            partidos = result;
-            totalCount=partidos.Count;
+            partidos = result.Items;
+            totalCount=(int)result.TotalCount;
         }
         private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<PartidoDto> e)
         {

@@ -73,10 +73,13 @@
             <CloseButton />
         </ModalHeader>
         <ModalBody>
-            <Field>
-                    <FieldLabel>Alias</FieldLabel>
-                    <TextEdit @bind-Text="@NuevaApuesta.Alias"/>
-            </Field>
+            <Validations @ref="@CreateValidationsRef" Model="@NuevaApuesta">
+            <Validation>
+                <Field>
+                        <FieldLabel>Alias</FieldLabel>
+                        <TextEdit @bind-Text="@NuevaApuesta.Alias"/>
+                </Field>
+            </Validation>
              @foreach (var prediccion in predicciones)
              {
              <Row Class="justify-content-between">
@@ -88,12 +91,12 @@
                 </Column>
                 <Column ColumnSize="ColumnSize.Is2">
                     <Field>
-                        <NumericEdit @bind-Value="@prediccion.PrediccionResultadoEquipoA"/>
+                        <NumericEdit Min=int.MinValue @bind-Value="@prediccion.PrediccionResultadoEquipoA"/>
                     </Field>
                 </Column>
                 <Column ColumnSize="ColumnSize.Is2">
                     <Field>
-                        <NumericEdit @bind-Value="@prediccion.PrediccionResultadoEquipoB"/>
+                        <NumericEdit Min=int.MinValue @bind-Value="@prediccion.PrediccionResultadoEquipoB"/>
                     </Field>
                 </Column>
                 <Column ColumnSize="ColumnSize.Is4">
@@ -104,6 +107,7 @@
                 </Column>
              </Row>
             }
+            </Validations>
         </ModalBody>
         <ModalFooter>
             <Button Color="Color.Secondary" Clicked="@HideCreateModal">Cerrar</Button>
@@ -192,12 +196,12 @@
                         </Column>
                         <Column ColumnSize="ColumnSize.Is2">
                             <Field>
-                                <NumericEdit @bind-Value="@prediccion.PrediccionResultadoEquipoA"/>
+                                <NumericEdit Min=int.MinValue @bind-Value="@prediccion.PrediccionResultadoEquipoA"/>
                             </Field>
                         </Column>
                         <Column ColumnSize="ColumnSize.Is2">
                             <Field>
-                                <NumericEdit @bind-Value="@prediccion.PrediccionResultadoEquipoB"/>
+                                <NumericEdit Min=int.MinValue @bind-Value="@prediccion.PrediccionResultadoEquipoB"/>
                             </Field>
                         </Column>
                         <Column ColumnSize="ColumnSize.Is4">

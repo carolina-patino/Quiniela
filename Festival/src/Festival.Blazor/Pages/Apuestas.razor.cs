@@ -37,6 +37,8 @@ namespace Festival.Blazor.Pages
         private int TotalCount { get; set; }
         private string filtro { get; set; } = null;
 
+        private Validations CreateValidationsRef;
+
         //Nueva apuesta
         private Modal modalCreateRef;
         private CreateUpdateApuestaDto NuevaApuesta { get; set; } = new CreateUpdateApuestaDto();
@@ -74,7 +76,7 @@ namespace Festival.Blazor.Pages
         }
         private async Task<Task> ShowCreateModal()
         {
-            partidos = await _partidoAppService.GetPartidosAsync();
+            partidos = (await _partidoAppService.GetPartidosAsync()).Items;
             predicciones = new List<CreateUpdatePrediccionDto>();
             foreach (var item in partidos)
             {
@@ -96,15 +98,18 @@ namespace Festival.Blazor.Pages
 
         private async Task AgregarAsync()
         {
-            ApuestaDto apuesta = await _apuestaAppService.CreateApuesta(NuevaApuesta);
-            foreach (var item in predicciones)
+            if (await CreateValidationsRef.ValidateAll())
             {
-                item.ApuestaId= apuesta.Id;
+                ApuestaDto apuesta = await _apuestaAppService.CreateApuesta(NuevaApuesta);
+                foreach (var item in predicciones)
+                {
+                    item.ApuestaId = apuesta.Id;
+                }
+                await _apuestaAppService.AgregarPredicciones(predicciones);
+                await _uiNotificationService.Success("La apuesta ha sido agregado exitosamente");
+                await GetApuestas();
+                await modalCreateRef.Hide();
             }
-            await _apuestaAppService.AgregarPredicciones(predicciones);
-            await _uiNotificationService.Success("La apuesta ha sido agregado exitosamente");
-            await GetApuestas();
-            await modalCreateRef.Hide();
         }
 
         private async Task OpenConsultarApuestaModal(ApuestaDto input)

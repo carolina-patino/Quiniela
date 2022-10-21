@@ -133,8 +133,8 @@ public class FestivalMenuContributor : IMenuContributor
        context.Menu.AddItem(new ApplicationMenuItem(
                 FestivalMenus.Apuestas,
                 "Mis Quinielas",
-                "/mis-quinielas",
-                icon: "fas fa-ballot-check",
+                url:"/mis-quinielas",
+                icon: "fa fa-futbol",
                 requiredPermissionName: FestivalPermissions.Apuestas.Default
        ));
       

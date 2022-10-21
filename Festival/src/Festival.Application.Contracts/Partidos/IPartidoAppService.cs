@@ -14,7 +14,7 @@ namespace Festival.Partidos
              CreateUpdatePartidoDto> //Used to create/update a book
     {
 
-        Task<List<PartidoDto>> GetPartidosAsync();
+        Task<PagedResultDto<PartidoDto>> GetPartidosAsync();
         Task CargarResultados(PartidoDto input);
 
         Task<List<PartidoDto>> GetPartidosDelDia();
