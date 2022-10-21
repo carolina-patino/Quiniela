@@ -38,7 +38,7 @@ public class FestivalMenuContributor : IMenuContributor
         }
     }
 
-    private Task ConfigureMainMenuAsync(MenuConfigurationContext context)
+    private async Task ConfigureMainMenuAsync(MenuConfigurationContext context)
     {
         var l = context.GetLocalizer<FestivalResource>();
 
@@ -138,7 +138,6 @@ public class FestivalMenuContributor : IMenuContributor
                 requiredPermissionName: FestivalPermissions.Apuestas.Default
        ));
       
-	 return Task.CompletedTask;
     }
 
     private Task ConfigureUserMenuAsync(MenuConfigurationContext context)
