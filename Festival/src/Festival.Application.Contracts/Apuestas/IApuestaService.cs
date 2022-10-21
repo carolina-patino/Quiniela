@@ -17,7 +17,7 @@ namespace Festival.Apuestas
 
         Task<ApuestaDto> GetApuesta(Guid id);
 
-        Task<List<ApuestaDto>> GetRanking();
+        Task<PagedResultDto<ApuestaDto>> GetRanking();
 
         Task EditarApuesta(ApuestaDto input);
 

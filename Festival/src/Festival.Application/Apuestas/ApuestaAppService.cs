@@ -54,8 +54,6 @@ namespace Festival.Apuestas
 
                 dto.PuntosObtenidos = dto.Predicciones.Sum(pr => pr.PuntosObtenidos);
             }
-
-
             var totalCount = await _apuestaRepository.CountAsync();
 
             return new PagedResultDto<ApuestaDto>(
@@ -110,7 +108,7 @@ namespace Festival.Apuestas
 
         }
 
-        public async Task<List<ApuestaDto>> GetRanking()
+        public async Task<PagedResultDto<ApuestaDto>> GetRanking()
         {
             var query = await _apuestaRepository.GetRanking();
             var apuestas = query.ToList();
@@ -121,7 +119,11 @@ namespace Festival.Apuestas
                 p.PuntosObtenidos = p.Predicciones.Sum(pr => pr.PuntosObtenidos);
                 return p;
              }).OrderByDescending(p => p.PuntosObtenidos).ToList();
-            return apuestasDto;
+            return new PagedResultDto<ApuestaDto>
+            {
+                TotalCount = apuestasDto.Count(),
+                Items = apuestasDto
+            };
         }
 
         public async Task EditarApuesta(ApuestaDto input)

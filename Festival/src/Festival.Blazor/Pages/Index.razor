@@ -13,7 +13,7 @@
 @if (CurrentUser.IsAuthenticated)
 {
     <Row Class="justify-content-between">
-    <Column ColumnSize="ColumnSize.Is4.OnWidescreen.Is12.OnMobile" >
+    <Column ColumnSize="ColumnSize.Is5.OnWidescreen.Is12.OnMobile" >
         <Row Class="justify-content-between">
             <Column ColumnSize="ColumnSize.Is12">
                 <Card>
@@ -39,7 +39,8 @@
                           ReadData="GetPartidosDelDia"
                           ShowPager="true"
                           PageSize="10"
-                          Responsive="true">
+                          Responsive="true"
+                          TotalItems="TotalCount">
                             <DataGridColumn TItem="PartidoDto"
                                 Field="@nameof(PartidoDto.EquipoA)"
                                 Caption="Equipo A">
@@ -73,7 +74,7 @@
             </Column>
         </Row>
     </Column>
-    <Column ColumnSize="ColumnSize.Is8.OnWidescreen.Is12.OnMobile">
+    <Column ColumnSize="ColumnSize.Is7.OnWidescreen.Is12.OnMobile">
         <Card>
             <CardHeader>
                 <Row Class="justify-content-between">
@@ -88,7 +89,8 @@
                   ReadData="OnDataGridReadAsync"
                   ShowPager="true"
                   PageSize="10"
-                  Responsive="true">
+                  Responsive="true"
+                  TotalItems="TotalCount">
                     <DataGridColumns>
                         <DataGridEntityActionsColumn TItem="ApuestaDto" @ref="@EntityActionsColumn">
                             <DisplayTemplate>
