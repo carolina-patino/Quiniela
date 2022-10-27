@@ -23,6 +23,7 @@ namespace Festival.Blazor.Pages
 
         private IReadOnlyList<PartidoDto> partidos { get; set; }
 
+        private Validations EditValidationsRef;
         private Validations CreateValidationsRef;
 
         private Modal modalCreateRef;
@@ -158,11 +159,19 @@ namespace Festival.Blazor.Pages
 
         private async Task CargarResultado()
         {
-            await _partidoAppService.CargarResultados(partido);
-            await _uiNotificationService.Success("El resultado ha sido cargado exitosamente");
-            await GetPartidos();
-            await HideCargarResultadoModal();
-            await _prediccionAppService.CalcularPuntos(partido);
+            if (await EditValidationsRef.ValidateAll())
+            {
+                await _partidoAppService.CargarResultados(partido);
+                await _uiNotificationService.Success("El resultado ha sido cargado exitosamente");
+                await GetPartidos();
+                await HideCargarResultadoModal();
+                await _prediccionAppService.CalcularPuntos(partido);
+            }
+            else
+            {
+                await _uiNotificationService.Error("Sólo puede cargar resultados mayores a 0");
+            }
+                
 
         }
 
