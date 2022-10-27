@@ -37,6 +37,7 @@ namespace Festival.Blazor.Pages
         private int TotalCount { get; set; }
         private string filtro { get; set; } = null;
 
+        private Validations EditValidationsRef;
         private Validations CreateValidationsRef;
 
         //Nueva apuesta
@@ -76,7 +77,6 @@ namespace Festival.Blazor.Pages
         }
         private async Task<Task> ShowCreateModal()
         {
-            Console.WriteLine("entro");
             partidos = (await _partidoAppService.GetPartidosAsync()).Items;
             predicciones = new List<CreateUpdatePrediccionDto>();
             foreach (var item in partidos)
@@ -142,8 +142,12 @@ namespace Festival.Blazor.Pages
 
         private async Task EditarApuesta()
         {
-            await _apuestaAppService.EditarApuesta(editarApuesta);
-            CloseEditarApuestaModal();
+            if (await EditValidationsRef.ValidateAll())
+            {
+                await _apuestaAppService.EditarApuesta(editarApuesta);
+                CloseEditarApuestaModal();
+            }
+            
         }
 
         private async Task SetPermissionsAsync()

@@ -43,7 +43,7 @@
                           TotalItems="TotalCount">
                             <DataGridColumn TItem="PartidoDto"
                                 Field="@nameof(PartidoDto.EquipoA)"
-                                Caption="Equipo A">
+                                Caption="">
                                 <DisplayTemplate>
                                         <Figure Size="FigureSize.Is24x24">
                                             <FigureImage Source="@ObtenerBandera(context.SiglasEquipoA)"   Rounded/>
@@ -53,7 +53,7 @@
                 </DataGridColumn>
                 <DataGridColumn TItem="PartidoDto"
                                 Field="@nameof(PartidoDto.EquipoB)"
-                                Caption="Equipo B">
+                                Caption="">
                                 <DisplayTemplate>
                                         <Figure Size="FigureSize.Is24x24">
                                             <FigureImage Source="@ObtenerBandera(context.SiglasEquipoB)"   Rounded/>
@@ -63,7 +63,7 @@
                 </DataGridColumn>
                 <DataGridColumn TItem="PartidoDto"
                                 Field="@nameof(PartidoDto.FechaPartido)"
-                                Caption="Fecha">
+                                Caption="Hora">
                                 <DisplayTemplate>
                                     @context.FechaPartido.ToShortTimeString()
                                 </DisplayTemplate>
