@@ -20,7 +20,7 @@
          @if (PuedeCrearApuesta)
          {
             <Button Color="Color.Primary"
-            Clicked="@ShowCreateModal">Agregar quiniela</Button>
+            Clicked="@ShowCreateModal">Agregar Quiniela</Button>
           }
         </Column>
     </Row>
@@ -51,12 +51,12 @@
                         <EntityActions TItem="ApuestaDto" EntityActionsColumn="@EntityActionsColumn">
                             <EntityAction TItem="ApuestaDto"
                                           Clicked="() => OpenConsultarApuestaModal(context)"
-                                          Text="Ver detalle">
+                                          Text="Ver Detalle">
                             </EntityAction>
                             <EntityAction TItem="ApuestaDto"
                                           Clicked="() => OpenEditarApuestaModal(context)"
                                           Visible=PuedeEditarApuesta
-                                          Text="Editar quiniela">
+                                          Text="Editar Quiniela">
                             </EntityAction>
                         </EntityActions>
                     </DisplayTemplate>
@@ -138,7 +138,13 @@
                       PageSize="10">
                 <DataGridColumns>
                     <DataGridColumn TItem="PrediccionDto"
-                                    Caption="Equipo A">
+                                    Caption="Grupo">
+                                    <DisplayTemplate>
+                                        @context.Partido.Grupo
+                                    </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="PrediccionDto"
+                                    Caption="">
                                     <DisplayTemplate>
                                         <Figure Size="FigureSize.Is24x24">
                                             <FigureImage Source="@ObtenerBandera(context.Partido.SiglasEquipoA)"   Rounded/>
@@ -147,7 +153,7 @@
                                     </DisplayTemplate>
                     </DataGridColumn>
                     <DataGridColumn TItem="PrediccionDto"
-                                    Caption="Equipo B">
+                                    Caption="">
                                     <DisplayTemplate>
                                         <Figure Size="FigureSize.Is24x24">
                                             <FigureImage Source="@ObtenerBandera(context.Partido.SiglasEquipoB)"   Rounded/>
@@ -169,7 +175,7 @@
                     </DataGridColumn>
                     <DataGridColumn TItem="PrediccionDto"
                                     Field="@nameof(PrediccionDto.PuntosObtenidos)"
-                                    Caption="Puntos obtenidos">
+                                    Caption="Puntos Obtenidos">
                     </DataGridColumn>
                 </DataGridColumns>
                  </DataGrid>

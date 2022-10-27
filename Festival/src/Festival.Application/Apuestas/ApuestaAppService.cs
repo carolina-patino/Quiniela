@@ -79,11 +79,11 @@ namespace Festival.Apuestas
                 prediccion.Partido.EquipoB = p.equipoB.Pais;
                 prediccion.Partido.SiglasEquipoA = p.equipoA.Siglas;
                 prediccion.Partido.SiglasEquipoB = p.equipoB.Siglas;
+                prediccion.Partido.Grupo = p.equipoA.Grupo;
                 return prediccion;
-            }).ToList();
+            }).OrderBy(p=> p.Partido.Grupo).ToList();
 
             apuestaDto.PuntosObtenidos = apuestaDto.Predicciones.Sum(pr => pr.PuntosObtenidos);
-
             return apuestaDto;
         }
 

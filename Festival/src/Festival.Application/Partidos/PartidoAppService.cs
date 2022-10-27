@@ -106,7 +106,7 @@ namespace Festival.Partidos
                 partidoDto.SiglasEquipoA = x.equipoA.Siglas;
                 partidoDto.SiglasEquipoB = x.equipoB.Siglas;
                 return partidoDto;
-            }).ToList();
+            }).OrderBy(p=> p.FechaPartido).ToList();
 
             return partidoDtos;
         }
