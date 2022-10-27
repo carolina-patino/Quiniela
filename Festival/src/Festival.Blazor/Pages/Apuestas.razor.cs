@@ -76,6 +76,7 @@ namespace Festival.Blazor.Pages
         }
         private async Task<Task> ShowCreateModal()
         {
+            Console.WriteLine("entro");
             partidos = (await _partidoAppService.GetPartidosAsync()).Items;
             predicciones = new List<CreateUpdatePrediccionDto>();
             foreach (var item in partidos)
@@ -148,9 +149,9 @@ namespace Festival.Blazor.Pages
         private async Task SetPermissionsAsync()
         {
             PuedeEditarApuesta = await AuthorizationService
-                .IsGrantedAsync(FestivalPermissions.Apuestas.Create);
+                .IsGrantedAsync(FestivalPermissions.Apuestas.Edit);
             PuedeCrearApuesta = await AuthorizationService
-                .IsGrantedAsync(FestivalPermissions.Partidos.CargarResultados);
+                .IsGrantedAsync(FestivalPermissions.Apuestas.Create);
         }
 
         public string GetResultado(PartidoDto partido)

@@ -67,7 +67,7 @@
 </Card>
 
 <Modal @ref="modalCreateRef">
-    <ModalContent Centered>
+    <ModalContent Centered Size="ModalSize.Large">
         <ModalHeader>
             <ModalTitle>Agregar quiniela</ModalTitle>
             <CloseButton />
@@ -82,28 +82,32 @@
             </Validation>
              @foreach (var prediccion in predicciones)
              {
-             <Row Class="justify-content-between">
-                <Column ColumnSize="ColumnSize.Is4">
-                       <Figure Size="FigureSize.Is24x24" Class="d-flex">
+             <Row>
+                <Column ColumnSize="ColumnSize.Is4" Class="d-flex">
+                       <Figure Size="FigureSize.Is24x24">
                             <FigureImage Source="@ObtenerBandera(prediccion.SiglasEquipoA)"   Rounded/>
-                            <p>@prediccion.EquipoA</p> 
                        </Figure>
+                       <span class="text-right" style="font-size:14px;margin-left:2px;">@prediccion.EquipoA</span> 
                 </Column>
                 <Column ColumnSize="ColumnSize.Is2">
+                    <Validation>
                     <Field>
-                        <NumericEdit Min=int.MinValue @bind-Value="@prediccion.PrediccionResultadoEquipoA"/>
+                        <NumericEdit TValue="int" @bind-Value="@prediccion.PrediccionResultadoEquipoA" Min="0" Culture="en-US" />
                     </Field>
+                    </Validation>
                 </Column>
                 <Column ColumnSize="ColumnSize.Is2">
+                    <Validation>
                     <Field>
-                        <NumericEdit Min=int.MinValue @bind-Value="@prediccion.PrediccionResultadoEquipoB"/>
+                        <NumericEdit TValue="int" @bind-Value="@prediccion.PrediccionResultadoEquipoB" Min="0" Max="99" />
                     </Field>
+                    </Validation>
                 </Column>
-                <Column ColumnSize="ColumnSize.Is4">
-                       <Figure Size="FigureSize.Is24x24" Class="d-flex">
-                            <FigureImage Source="@ObtenerBandera(prediccion.SiglasEquipoB)"   Rounded/>
-                            <p>@prediccion.EquipoB</p> 
+                <Column ColumnSize="ColumnSize.Is4" Class="d-flex">
+                       <Figure Size="FigureSize.Is24x24" >
+                            <FigureImage Source="@ObtenerBandera(prediccion.SiglasEquipoB)" Rounded/>
                        </Figure>
+                       <span style="font-size:14px;margin-left:2px;text-align:end">@prediccion.EquipoB</span> 
                 </Column>
              </Row>
             }
@@ -173,7 +177,7 @@
 </Modal>
 
 <Modal @ref="EditarApuestaRef">
-    <ModalContent Centered>
+    <ModalContent Centered Size="ModalSize.Large">
         <ModalHeader>
             <ModalTitle>Editar apuesta</ModalTitle>
             <CloseButton />
@@ -188,11 +192,11 @@
                 @foreach (var prediccion in editarApuesta.Predicciones)
                 {
                     <Row Class="justify-content-between">
-                        <Column ColumnSize="ColumnSize.Is4">
-                            <Figure Size="FigureSize.Is24x24" Class="d-flex">
-                                <FigureImage Source="@ObtenerBandera(prediccion.Partido.SiglasEquipoA)"   Rounded/>
-                                <p>@prediccion.Partido.EquipoA</p> 
+                        <Column ColumnSize="ColumnSize.Is4" Class="d-flex">
+                            <Figure Size="FigureSize.Is24x24" >
+                                <FigureImage Source="@ObtenerBandera(prediccion.Partido.SiglasEquipoA)"   Rounded/> 
                             </Figure>
+                            <span style="font-size:14px;margin-left:2px;text-align:right">@prediccion.Partido.EquipoA</span> 
                         </Column>
                         <Column ColumnSize="ColumnSize.Is2">
                             <Field>
@@ -204,11 +208,11 @@
                                 <NumericEdit Min=int.MinValue @bind-Value="@prediccion.PrediccionResultadoEquipoB"/>
                             </Field>
                         </Column>
-                        <Column ColumnSize="ColumnSize.Is4">
+                        <Column ColumnSize="ColumnSize.Is4" Class="d-flex">
                             <Figure Size="FigureSize.Is24x24" Class="d-flex">
                                 <FigureImage Source="@ObtenerBandera(prediccion.Partido.SiglasEquipoB)"   Rounded/>
-                                <p>@prediccion.Partido.EquipoB</p> 
                             </Figure>
+                            <span style="font-size:14px;margin-left:2px;text-align:right">@prediccion.Partido.EquipoB</span> 
                         </Column>
                     </Row>
                 }

@@ -78,7 +78,7 @@ public class FestivalAuthServerModule : AbpModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         //You can disable this setting in production to avoid any potential security risks.
-        Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
+        Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = false;
 
         var hostingEnvironment = context.Services.GetHostingEnvironment();
         var configuration = context.Services.GetConfiguration();

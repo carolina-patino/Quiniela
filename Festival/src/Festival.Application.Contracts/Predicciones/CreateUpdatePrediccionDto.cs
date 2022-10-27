@@ -11,9 +11,11 @@ namespace Festival.Predicciones
         public Guid Tenant { get; set; }
 
         [Required(ErrorMessage = "La predicción para el primer equipo es requerida")]
+        [Range(0, 99, ErrorMessage = "No se aceptan valores negativos")]
         public int PrediccionResultadoEquipoA { get; set; }
 
         [Required(ErrorMessage = "La predicción para el segundo equipo es requerida")]
+        [Range(0, 99, ErrorMessage = "No se aceptan valores negativos")]
         public int PrediccionResultadoEquipoB { get; set; }
 
         public int PuntosObtenidos { get; set; }

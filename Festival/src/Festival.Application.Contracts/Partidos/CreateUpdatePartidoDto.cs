@@ -7,8 +7,10 @@ namespace Festival.Partidos
 {
     public class CreateUpdatePartidoDto
     {
+        [Range(0, 99, ErrorMessage = "No se aceptan valores negativos")]
         public int ResultadoEquipoA { get; set; }
 
+        [Range(0, 99, ErrorMessage = "No se aceptan valores negativos")]
         public int ResultadoEquipoB { get; set; }
 
         [Required(ErrorMessage = "La fecha es requerida")]
