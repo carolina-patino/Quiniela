@@ -72,6 +72,8 @@
                                 Field="@nameof(PartidoDto.FechaPartido)"
                                 Caption="Fecha">
                 </DataGridColumn>
+                @if(PuedeCargarResultados){
+                
                 <DataGridEntityActionsColumn TItem="PartidoDto" @ref="@EntityActionsColumn">
                     <DisplayTemplate>
                         <EntityActions TItem="PartidoDto" EntityActionsColumn="@EntityActionsColumn">
@@ -83,7 +85,7 @@
                         </EntityActions>
                     </DisplayTemplate>
                 </DataGridEntityActionsColumn>
-
+                }
             </DataGridColumns>
         </DataGrid>
     </CardBody>

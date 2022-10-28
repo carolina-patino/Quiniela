@@ -30,7 +30,7 @@
                   Data="listaApuestas"
                   ReadData="OnDataGridReadAsync"
                   TotalItems="TotalCount"
-                  ShowPager="true"
+                  ShowPager="false"
                   PageSize="10"
                   Responsive="true">
             <DataGridColumns>
@@ -83,7 +83,8 @@
              @foreach (var prediccion in predicciones)
              {
              <Row>
-                <Column ColumnSize="ColumnSize.Is4" Class="d-flex justify-content-end">
+                <Column ColumnSize="ColumnSize.Is4" Class="d-flex justify-content-end"
+                        Display="Display.Block.OnFullHD.Block.OnTablet.None.OnMobile">
                      <span class="text-right" style="font-size:14px;margin-left:2px;">@prediccion.EquipoA</span> 
                        <Figure Size="FigureSize.Is24x24">
                             <FigureImage Source="@ObtenerBandera(prediccion.SiglasEquipoA)"   Rounded/>
@@ -124,7 +125,7 @@
 <Modal @ref="ConsultarApuestaRef">
     <ModalContent Centered Size="ModalSize.ExtraLarge">
         <ModalHeader>
-            <ModalTitle>Apuesta: @detalleApuesta.Alias</ModalTitle>
+            <ModalTitle>Quiniela: @detalleApuesta.Alias</ModalTitle>
             <CloseButton Clicked="CloseConsultarApuestaModal" />
         </ModalHeader>
         <ModalBody> 
