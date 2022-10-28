@@ -16,7 +16,7 @@ using Festival.Permissions;
 
 namespace Festival.Blazor.Pages
 {
-    public partial class Apuestas
+    public partial class Apuestas: FestivalComponentBase
     {
         private readonly IApuestaAppService _apuestaAppService;
         private readonly IPartidoAppService _partidoAppService;
@@ -99,17 +99,24 @@ namespace Festival.Blazor.Pages
 
         private async Task AgregarAsync()
         {
-            if (await CreateValidationsRef.ValidateAll())
+            try
             {
-                ApuestaDto apuesta = await _apuestaAppService.CreateApuesta(NuevaApuesta);
-                foreach (var item in predicciones)
+                if (await CreateValidationsRef.ValidateAll())
                 {
-                    item.ApuestaId = apuesta.Id;
+                    ApuestaDto apuesta = await _apuestaAppService.CreateApuesta(NuevaApuesta);
+                    foreach (var item in predicciones)
+                    {
+                        item.ApuestaId = apuesta.Id;
+                    }
+                    await _apuestaAppService.AgregarPredicciones(predicciones);
+                    await _uiNotificationService.Success("La apuesta ha sido agregado exitosamente");
+                    await GetApuestas();
+                    await modalCreateRef.Hide();
                 }
-                await _apuestaAppService.AgregarPredicciones(predicciones);
-                await _uiNotificationService.Success("La apuesta ha sido agregado exitosamente");
-                await GetApuestas();
-                await modalCreateRef.Hide();
+            }
+            catch (Exception ex)
+            {
+                await HandleErrorAsync(ex);
             }
         }
 
@@ -142,12 +149,20 @@ namespace Festival.Blazor.Pages
 
         private async Task EditarApuesta()
         {
-            if (await EditValidationsRef.ValidateAll())
+            try
             {
-                await _apuestaAppService.EditarApuesta(editarApuesta);
-                CloseEditarApuestaModal();
+
+
+                if (await EditValidationsRef.ValidateAll())
+                {
+                    await _apuestaAppService.EditarApuesta(editarApuesta);
+                    CloseEditarApuestaModal();
+                }
             }
-            
+            catch (Exception ex)
+            {
+                await HandleErrorAsync(ex);
+            }
         }
 
         private async Task SetPermissionsAsync()

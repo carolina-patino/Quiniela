@@ -17,7 +17,7 @@ using Festival.Predicciones;
 
 namespace Festival.Blazor.Pages
 {
-    public partial class Partidos
+    public partial class Partidos: FestivalComponentBase
     {
         private CreateUpdatePartidoDto NuevoPartido { get; set; } = new CreateUpdatePartidoDto();
 
@@ -104,18 +104,27 @@ namespace Festival.Blazor.Pages
 
         private async Task AgregarAsync()
         {
-            if (await CreateValidationsRef.ValidateAll())
+            try
             {
-                await _partidoAppService.CreateAsync(NuevoPartido);
-                await _uiNotificationService.Success("El partido ha sido agregado exitosamente");
-                await GetPartidos();
-                await HideCreateModal();
-            }
-            else
+                if (await CreateValidationsRef.ValidateAll())
+                {
+                    await _partidoAppService.CreateAsync(NuevoPartido);
+                    await _uiNotificationService.Success("El partido ha sido agregado exitosamente");
+                    await GetPartidos();
+                    await HideCreateModal();
+                }
+                else
+                {
+                    await _uiNotificationService.Success("El partido ha sido agregado exitosamente");
+                }
+            }catch(Exception ex)
             {
-                await _uiNotificationService.Success("El partido ha sido agregado exitosamente");
+                await HandleErrorAsync(ex);
             }
+            
         }
+
+
 
         private Task ShowCreateModal()
         {
@@ -159,19 +168,26 @@ namespace Festival.Blazor.Pages
 
         private async Task CargarResultado()
         {
-            if (await EditValidationsRef.ValidateAll())
+            try
             {
-                await _partidoAppService.CargarResultados(partido);
-                await _uiNotificationService.Success("El resultado ha sido cargado exitosamente");
-                await GetPartidos();
-                await HideCargarResultadoModal();
-                await _prediccionAppService.CalcularPuntos(partido);
+                if (await EditValidationsRef.ValidateAll())
+                {
+                    await _partidoAppService.CargarResultados(partido);
+                    await _uiNotificationService.Success("El resultado ha sido cargado exitosamente");
+                    await GetPartidos();
+                    await HideCargarResultadoModal();
+                    await _prediccionAppService.CalcularPuntos(partido);
+                }
+                else
+                {
+                    await _uiNotificationService.Error("Sólo puede cargar resultados mayores a 0");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                await _uiNotificationService.Error("Sólo puede cargar resultados mayores a 0");
+                await HandleErrorAsync(ex);
             }
-                
+
 
         }
 
