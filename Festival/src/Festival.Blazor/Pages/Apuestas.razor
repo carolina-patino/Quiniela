@@ -69,7 +69,7 @@
 <Modal @ref="modalCreateRef">
     <ModalContent Centered Size="ModalSize.Large">
         <ModalHeader>
-            <ModalTitle>Agregar quiniela</ModalTitle>
+            <ModalTitle>Agregar Quiniela</ModalTitle>
             <CloseButton />
         </ModalHeader>
         <ModalBody>
@@ -83,33 +83,32 @@
              @foreach (var prediccion in predicciones)
              {
              <Row>
-                <Column ColumnSize="ColumnSize.Is4" Class="d-flex justify-content-end"
-                        Display="Display.Block.OnFullHD.Block.OnTablet.None.OnMobile">
-                     <span class="text-right" style="font-size:14px;margin-left:2px;">@prediccion.EquipoA</span> 
-                       <Figure Size="FigureSize.Is24x24">
+                <Column ColumnSize="ColumnSize.Is4.OnWidescreen.Is3.OnMobile" Class="d-flex justify-content-end" >
+                    <span class="paises" style="margin-right:2px;">@prediccion.EquipoA</span> 
+                       <Figure class="imagen" Size="FigureSize.Is24x24">
                             <FigureImage Source="@ObtenerBandera(prediccion.SiglasEquipoA)"   Rounded/>
                        </Figure>
-                      
                 </Column>
-                <Column ColumnSize="ColumnSize.Is2">
+                <Column ColumnSize="ColumnSize.Is2.OnWidescreen.Is3.OnMobile">
                     <Validation>
                     <Field>
                         <NumericEdit TValue="int" @bind-Value="@prediccion.PrediccionResultadoEquipoA" Min="0" Culture="en-US" />
                     </Field>
                     </Validation>
                 </Column>
-                <Column ColumnSize="ColumnSize.Is2">
+                <Column ColumnSize="ColumnSize.Is2.OnWidescreen.Is3.OnMobile">
                     <Validation>
                     <Field>
                         <NumericEdit TValue="int" @bind-Value="@prediccion.PrediccionResultadoEquipoB" Min="0" Max="99" />
                     </Field>
                     </Validation>
                 </Column>
-                <Column ColumnSize="ColumnSize.Is4" Class="d-flex">
-                       <Figure Size="FigureSize.Is24x24" >
-                            <FigureImage Source="@ObtenerBandera(prediccion.SiglasEquipoB)" Rounded/>
+                 <Column ColumnSize="ColumnSize.Is4.OnWidescreen.Is3.OnMobile" Class="d-flex justify-content-start">
+                    
+                       <Figure class="imagen" Size="FigureSize.Is24x24">
+                            <FigureImage Source="@ObtenerBandera(prediccion.SiglasEquipoB)"   Rounded/>
                        </Figure>
-                       <span style="font-size:14px;margin-left:2px;text-align:end">@prediccion.EquipoB</span> 
+                      <span class="paises" style="font-size:14px;margin-left:2px;">@prediccion.EquipoB</span> 
                 </Column>
              </Row>
             }
@@ -187,7 +186,7 @@
 <Modal @ref="EditarApuestaRef">
     <ModalContent Centered Size="ModalSize.Large">
         <ModalHeader>
-            <ModalTitle>Editar quiniela</ModalTitle>
+            <ModalTitle>Editar Quiniela</ModalTitle>
             <CloseButton />
         </ModalHeader>
         <ModalBody>
@@ -200,32 +199,33 @@
             {
                 @foreach (var prediccion in editarApuesta.Predicciones)
                 {
-                    <Row Class="justify-content-between">
-                        <Column ColumnSize="ColumnSize.Is4" Class="d-flex justify-content-end">
-                             <span style="font-size:14px;margin-right:2px;">@prediccion.Partido.EquipoA</span> 
-                            <Figure Size="FigureSize.Is24x24" >
-                                <FigureImage Source="@ObtenerBandera(prediccion.Partido.SiglasEquipoA)"   Rounded/> 
-                            </Figure>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is4.OnWidescreen.Is3.OnMobile" Class="d-flex justify-content-end">
+                     <span class="paises" style="margin-right:2px;">@prediccion.Partido.EquipoA</span> 
+                       <Figure class="imagen" Size="FigureSize.Is24x24">
+                            <FigureImage Source="@ObtenerBandera(prediccion.Partido.SiglasEquipoA)"   Rounded/>
+                       </Figure>
                         </Column>
-                        <Column ColumnSize="ColumnSize.Is2">
+                        <Column ColumnSize="ColumnSize.Is2.OnWidescreen.Is3.OnMobile">
                             <Validation>
                             <Field>
                                 <NumericEdit Min=int.MinValue @bind-Value="@prediccion.PrediccionResultadoEquipoA"/>
                             </Field>
                             </Validation>
                         </Column>
-                        <Column ColumnSize="ColumnSize.Is2">
+                        <Column ColumnSize="ColumnSize.Is2.OnWidescreen.Is3.OnMobile">
                             <Validation>
                             <Field>
                                 <NumericEdit Min=int.MinValue @bind-Value="@prediccion.PrediccionResultadoEquipoB"/>
                             </Field>
                             </Validation>
                         </Column>
-                        <Column ColumnSize="ColumnSize.Is4" Class="d-flex">
-                            <Figure Size="FigureSize.Is24x24" >
-                                <FigureImage Source="@ObtenerBandera(prediccion.Partido.SiglasEquipoB)"   Rounded/>
-                            </Figure>
-                            <span style="font-size:14px;margin-left:2px;text-align:right">@prediccion.Partido.EquipoB</span> 
+                         <Column ColumnSize="ColumnSize.Is4.OnWidescreen.Is3.OnMobile" Class="d-flex justify-content-start">
+                     
+                       <Figure class="imagen" Size="FigureSize.Is24x24">
+                            <FigureImage Source="@ObtenerBandera(prediccion.Partido.SiglasEquipoB)"   Rounded/>
+                       </Figure>
+                       <span class="paises" style="margin-left:2px;">@prediccion.Partido.EquipoB</span> 
                         </Column>
                     </Row>
                 }
@@ -239,4 +239,3 @@
         </ModalFooter>
     </ModalContent>
 </Modal>
-
