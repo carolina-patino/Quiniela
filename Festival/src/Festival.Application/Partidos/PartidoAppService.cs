@@ -41,8 +41,9 @@ namespace Festival.Partidos
         }
 
         [Authorize(FestivalPermissions.Partidos.Consultar)]
-        public async Task<List<PartidoDto>> GetPartidosAsync()
+        public async Task<PagedResultDto<PartidoDto>> GetPartidosAsync()
         {
+            
             var queryable = await _partidoRepository.GetPartidos();
 
             var query = from partido in queryable
@@ -63,7 +64,11 @@ namespace Festival.Partidos
 
             partidoDtos = partidoDtos.OrderBy(x => x.Grupo).ToList();
 
-            return partidoDtos;
+            return new PagedResultDto<PartidoDto>
+            {
+                Items = partidoDtos,
+                TotalCount = partidoDtos.Count
+            };
         }
 
         [Authorize(FestivalPermissions.Partidos.CargarResultados)]
@@ -101,7 +106,7 @@ namespace Festival.Partidos
                 partidoDto.SiglasEquipoA = x.equipoA.Siglas;
                 partidoDto.SiglasEquipoB = x.equipoB.Siglas;
                 return partidoDto;
-            }).ToList();
+            }).OrderBy(p=> p.FechaPartido).ToList();
 
             return partidoDtos;
         }

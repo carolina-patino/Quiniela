@@ -23,6 +23,7 @@ public class FestivalPermissionDefinitionProvider : PermissionDefinitionProvider
         apuestasPermission.AddChild(FestivalPermissions.Apuestas.Create, L("Permission:CrearApuestas"));
         apuestasPermission.AddChild(FestivalPermissions.Apuestas.Edit, L("Permission:EditarApuestas"));
         apuestasPermission.AddChild(FestivalPermissions.Apuestas.Ranking, L("Permission:Ranking"));
+        apuestasPermission.AddChild(FestivalPermissions.Apuestas.Delete, L("Permission:Delete"));
 
         //Define your own permissions here. Example:
         //myGroup.AddPermission(FestivalPermissions.MyPermission1, L("Permission:MyPermission1"));

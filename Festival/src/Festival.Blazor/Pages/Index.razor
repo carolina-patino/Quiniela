@@ -13,7 +13,7 @@
 @if (CurrentUser.IsAuthenticated)
 {
     <Row Class="justify-content-between">
-    <Column ColumnSize="ColumnSize.Is4.OnWidescreen.Is12.OnMobile" >
+    <Column ColumnSize="ColumnSize.Is5.OnWidescreen.Is12.OnMobile" >
         <Row Class="justify-content-between">
             <Column ColumnSize="ColumnSize.Is12">
                 <Card>
@@ -37,12 +37,13 @@
                         <DataGrid TItem="PartidoDto"
                           Data="partidos"
                           ReadData="GetPartidosDelDia"
-                          ShowPager="true"
+                          ShowPager="false"
                           PageSize="10"
-                          Responsive="true">
+                          Responsive="true"
+                          TotalItems="TotalCount">
                             <DataGridColumn TItem="PartidoDto"
                                 Field="@nameof(PartidoDto.EquipoA)"
-                                Caption="Equipo A">
+                                Caption="">
                                 <DisplayTemplate>
                                         <Figure Size="FigureSize.Is24x24">
                                             <FigureImage Source="@ObtenerBandera(context.SiglasEquipoA)"   Rounded/>
@@ -52,7 +53,7 @@
                 </DataGridColumn>
                 <DataGridColumn TItem="PartidoDto"
                                 Field="@nameof(PartidoDto.EquipoB)"
-                                Caption="Equipo B">
+                                Caption="">
                                 <DisplayTemplate>
                                         <Figure Size="FigureSize.Is24x24">
                                             <FigureImage Source="@ObtenerBandera(context.SiglasEquipoB)"   Rounded/>
@@ -62,7 +63,7 @@
                 </DataGridColumn>
                 <DataGridColumn TItem="PartidoDto"
                                 Field="@nameof(PartidoDto.FechaPartido)"
-                                Caption="Fecha">
+                                Caption="Hora">
                                 <DisplayTemplate>
                                     @context.FechaPartido.ToShortTimeString()
                                 </DisplayTemplate>
@@ -73,7 +74,7 @@
             </Column>
         </Row>
     </Column>
-    <Column ColumnSize="ColumnSize.Is8.OnWidescreen.Is12.OnMobile">
+    <Column ColumnSize="ColumnSize.Is7.OnWidescreen.Is12.OnMobile">
         <Card>
             <CardHeader>
                 <Row Class="justify-content-between">
@@ -86,16 +87,17 @@
                 <DataGrid TItem="ApuestaDto"
                   Data="apuestas"
                   ReadData="OnDataGridReadAsync"
-                  ShowPager="true"
+                  ShowPager="false"
                   PageSize="10"
-                  Responsive="true">
+                  Responsive="true"
+                  TotalItems="TotalCount">
                     <DataGridColumns>
                         <DataGridEntityActionsColumn TItem="ApuestaDto" @ref="@EntityActionsColumn">
                             <DisplayTemplate>
                                 <EntityActions TItem="ApuestaDto" EntityActionsColumn="@EntityActionsColumn">
                                     <EntityAction TItem="ApuestaDto"
                                           Clicked="() => OpenConsultarApuestaModal(context)"  
-                                          Text="Ver detalle">
+                                          Text="Ver Detalle">
                                     </EntityAction>
                                 </EntityActions>
                             </DisplayTemplate>
@@ -119,7 +121,7 @@
         <Modal @ref="ConsultarApuestaRef">
             <ModalContent Centered Size="ModalSize.ExtraLarge">
                 <ModalHeader>
-                    <ModalTitle>Apuesta: @detalleApuesta.Alias</ModalTitle>
+                    <ModalTitle>Quiniela: @detalleApuesta.Alias</ModalTitle>
                     <CloseButton Clicked="CloseConsultarApuestaModal" />
                 </ModalHeader>
                 <ModalBody> 
@@ -129,10 +131,18 @@
                     <DataGrid TItem="PrediccionDto"
                       Data="detalleApuesta.Predicciones"
                       ShowPager="true"
-                      PageSize="10">
+                      PageSize="10"
+                      Responsive="true"
+                  >
                         <DataGridColumns>
                             <DataGridColumn TItem="PrediccionDto"
-                                    Caption="Equipo A">
+                                    Caption="Grupo">
+                                <DisplayTemplate>
+                                    @context.Partido.Grupo
+                                </DisplayTemplate>
+                            </DataGridColumn>
+                            <DataGridColumn TItem="PrediccionDto"
+                                    Caption="">
                                 <DisplayTemplate>
                                     <Figure Size="FigureSize.Is24x24">
                                         <FigureImage Source="@ObtenerBandera(context.Partido.SiglasEquipoA)"   Rounded/>
@@ -141,7 +151,7 @@
                                 </DisplayTemplate>
                             </DataGridColumn>
                             <DataGridColumn TItem="PrediccionDto"
-                                    Caption="Equipo B">
+                                    Caption="">
                                 <DisplayTemplate>
                                     <Figure Size="FigureSize.Is24x24">
                                         <FigureImage Source="@ObtenerBandera(context.Partido.SiglasEquipoB)"   Rounded/>
@@ -163,7 +173,7 @@
                             </DataGridColumn> 
                             <DataGridColumn TItem="PrediccionDto"
                                     Field="@nameof(PrediccionDto.PuntosObtenidos)"
-                                    Caption="Puntos obtenidos">
+                                    Caption="Puntos Obtenidos">
                             </DataGridColumn>
                         </DataGridColumns>
                     </DataGrid>

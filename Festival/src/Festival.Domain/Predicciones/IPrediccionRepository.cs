@@ -10,5 +10,7 @@ namespace Festival.Predicciones
     public interface IPrediccionRepository : IRepository<Prediccion, Guid>
     {
         Task<List<Prediccion>> GetPredicciones(Guid PartidoId);
+
+        Task<List<Prediccion>> GetPrediccionesPorApuesta(Guid ApuestaId);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Festival.Partidos;
+﻿using Festival.Apuestas;
+using Festival.Partidos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +34,7 @@ namespace Festival.Predicciones
             var predicciones = await _prediccionRepository.GetPredicciones(Partido.Id);
             var equipoGanador = "";
             
-            if (Partido.ResultadoEquipoA >= Partido.ResultadoEquipoB)
+            if (Partido.ResultadoEquipoA > Partido.ResultadoEquipoB)
             {
                 equipoGanador = "A";
             }
@@ -44,21 +45,30 @@ namespace Festival.Predicciones
             
             foreach (var prediccion in predicciones)
             {
-                if (Partido.ResultadoEquipoA == prediccion.PrediccionResultadoEquipoA && Partido.ResultadoEquipoA == prediccion.PrediccionResultadoEquipoA)
+                prediccion.PuntosObtenidos = 0;
+                if (Partido.ResultadoEquipoA == prediccion.PrediccionResultadoEquipoA && Partido.ResultadoEquipoB == prediccion.PrediccionResultadoEquipoB)
                 {
-                    prediccion.PuntosObtenidos = prediccion.PuntosObtenidos + 3;
+                    prediccion.PuntosObtenidos = 3;
                 }
-                else if (equipoGanador == "A" && prediccion.PrediccionResultadoEquipoA >= prediccion.PrediccionResultadoEquipoB)
+                else if (equipoGanador == "A" && prediccion.PrediccionResultadoEquipoA > prediccion.PrediccionResultadoEquipoB)
                 {
-                    prediccion.PuntosObtenidos = prediccion.PuntosObtenidos + 1;
+                    prediccion.PuntosObtenidos = 1;
                 }
                 else if (equipoGanador == "B" && prediccion.PrediccionResultadoEquipoB > prediccion.PrediccionResultadoEquipoA)
                 {
-                    prediccion.PuntosObtenidos = prediccion.PuntosObtenidos + 1;
+                    prediccion.PuntosObtenidos = 1;
                 }
             }
 
             await _prediccionRepository.UpdateManyAsync(predicciones);
+        }
+
+        public async Task EliminarPredicciones(Guid ApuestaId)
+        {
+            var predicciones = await _prediccionRepository.GetPrediccionesPorApuesta(ApuestaId);
+
+            await _prediccionRepository.DeleteManyAsync(predicciones);
+
         }
 
     }

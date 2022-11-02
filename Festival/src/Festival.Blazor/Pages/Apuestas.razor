@@ -20,7 +20,7 @@
          @if (PuedeCrearApuesta)
          {
             <Button Color="Color.Primary"
-            Clicked="@ShowCreateModal">Agregar quiniela</Button>
+            Clicked="@ShowCreateModal">Agregar Quiniela</Button>
           }
         </Column>
     </Row>
@@ -30,7 +30,7 @@
                   Data="listaApuestas"
                   ReadData="OnDataGridReadAsync"
                   TotalItems="TotalCount"
-                  ShowPager="true"
+                  ShowPager="false"
                   PageSize="10"
                   Responsive="true">
             <DataGridColumns>
@@ -44,19 +44,24 @@
                 </DataGridColumn>
                 <DataGridColumn TItem="ApuestaDto"
                                 Field="@nameof(ApuestaDto.PuntosObtenidos)"
-                                Caption="Puntos obtenidos">
+                                Caption="Puntos Obtenidos">
                 </DataGridColumn>
                 <DataGridEntityActionsColumn TItem="ApuestaDto" @ref="@EntityActionsColumn">
                     <DisplayTemplate>
                         <EntityActions TItem="ApuestaDto" EntityActionsColumn="@EntityActionsColumn">
                             <EntityAction TItem="ApuestaDto"
                                           Clicked="() => OpenConsultarApuestaModal(context)"
-                                          Text="Ver detalle">
+                                          Text="Ver Detalle">
                             </EntityAction>
                             <EntityAction TItem="ApuestaDto"
                                           Clicked="() => OpenEditarApuestaModal(context)"
                                           Visible=PuedeEditarApuesta
-                                          Text="Editar quiniela">
+                                          Text="Editar Quiniela">
+                            </EntityAction>
+                            <EntityAction TItem="ApuestaDto"
+                                          Clicked="() => OpenEliminarApuestaModal(context)"
+                                          Visible=PuedeEliminarApuesta
+                                          Text="Eliminar Quiniela">
                             </EntityAction>
                         </EntityActions>
                     </DisplayTemplate>
@@ -67,43 +72,52 @@
 </Card>
 
 <Modal @ref="modalCreateRef">
-    <ModalContent Centered>
+    <ModalContent Centered Size="ModalSize.Large">
         <ModalHeader>
-            <ModalTitle>Agregar quiniela</ModalTitle>
+            <ModalTitle>Agregar Quiniela</ModalTitle>
             <CloseButton />
         </ModalHeader>
         <ModalBody>
-            <Field>
-                    <FieldLabel>Alias</FieldLabel>
-                    <TextEdit @bind-Text="@NuevaApuesta.Alias"/>
-            </Field>
+            <Validations @ref="@CreateValidationsRef" Model="@NuevaApuesta">
+            <Validation>
+                <Field>
+                        <FieldLabel>Alias</FieldLabel>
+                        <TextEdit @bind-Text="@NuevaApuesta.Alias"/>
+                </Field>
+            </Validation>
              @foreach (var prediccion in predicciones)
              {
-             <Row Class="justify-content-between">
-                <Column ColumnSize="ColumnSize.Is4">
-                       <Figure Size="FigureSize.Is24x24" Class="d-flex">
+             <Row>
+                <Column ColumnSize="ColumnSize.Is4.OnWidescreen.Is3.OnMobile" Class="d-flex justify-content-end" >
+                    <span class="paises" style="margin-right:2px;">@prediccion.EquipoA</span> 
+                       <Figure class="imagen" Size="FigureSize.Is24x24">
                             <FigureImage Source="@ObtenerBandera(prediccion.SiglasEquipoA)"   Rounded/>
-                            <p>@prediccion.EquipoA</p> 
                        </Figure>
                 </Column>
-                <Column ColumnSize="ColumnSize.Is2">
+                <Column ColumnSize="ColumnSize.Is2.OnWidescreen.Is3.OnMobile">
+                    <Validation>
                     <Field>
-                        <NumericEdit @bind-Value="@prediccion.PrediccionResultadoEquipoA"/>
+                        <NumericEdit TValue="int" @bind-Value="@prediccion.PrediccionResultadoEquipoA" Min="0" Culture="en-US" />
                     </Field>
+                    </Validation>
                 </Column>
-                <Column ColumnSize="ColumnSize.Is2">
+                <Column ColumnSize="ColumnSize.Is2.OnWidescreen.Is3.OnMobile">
+                    <Validation>
                     <Field>
-                        <NumericEdit @bind-Value="@prediccion.PrediccionResultadoEquipoB"/>
+                        <NumericEdit TValue="int" @bind-Value="@prediccion.PrediccionResultadoEquipoB" Min="0" Max="99" />
                     </Field>
+                    </Validation>
                 </Column>
-                <Column ColumnSize="ColumnSize.Is4">
-                       <Figure Size="FigureSize.Is24x24" Class="d-flex">
+                 <Column ColumnSize="ColumnSize.Is4.OnWidescreen.Is3.OnMobile" Class="d-flex justify-content-start">
+                    
+                       <Figure class="imagen" Size="FigureSize.Is24x24">
                             <FigureImage Source="@ObtenerBandera(prediccion.SiglasEquipoB)"   Rounded/>
-                            <p>@prediccion.EquipoB</p> 
                        </Figure>
+                      <span class="paises" style="font-size:14px;margin-left:2px;">@prediccion.EquipoB</span> 
                 </Column>
              </Row>
             }
+            </Validations>
         </ModalBody>
         <ModalFooter>
             <Button Color="Color.Secondary" Clicked="@HideCreateModal">Cerrar</Button>
@@ -115,7 +129,7 @@
 <Modal @ref="ConsultarApuestaRef">
     <ModalContent Centered Size="ModalSize.ExtraLarge">
         <ModalHeader>
-            <ModalTitle>Apuesta: @detalleApuesta.Alias</ModalTitle>
+            <ModalTitle>Quiniela: @detalleApuesta.Alias</ModalTitle>
             <CloseButton Clicked="CloseConsultarApuestaModal" />
         </ModalHeader>
         <ModalBody> 
@@ -129,7 +143,13 @@
                       PageSize="10">
                 <DataGridColumns>
                     <DataGridColumn TItem="PrediccionDto"
-                                    Caption="Equipo A">
+                                    Caption="Grupo">
+                                    <DisplayTemplate>
+                                        @context.Partido.Grupo
+                                    </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="PrediccionDto"
+                                    Caption="">
                                     <DisplayTemplate>
                                         <Figure Size="FigureSize.Is24x24">
                                             <FigureImage Source="@ObtenerBandera(context.Partido.SiglasEquipoA)"   Rounded/>
@@ -138,7 +158,7 @@
                                     </DisplayTemplate>
                     </DataGridColumn>
                     <DataGridColumn TItem="PrediccionDto"
-                                    Caption="Equipo B">
+                                    Caption="">
                                     <DisplayTemplate>
                                         <Figure Size="FigureSize.Is24x24">
                                             <FigureImage Source="@ObtenerBandera(context.Partido.SiglasEquipoB)"   Rounded/>
@@ -160,7 +180,7 @@
                     </DataGridColumn>
                     <DataGridColumn TItem="PrediccionDto"
                                     Field="@nameof(PrediccionDto.PuntosObtenidos)"
-                                    Caption="Puntos obtenidos">
+                                    Caption="Puntos Obtenidos">
                     </DataGridColumn>
                 </DataGridColumns>
                  </DataGrid>
@@ -169,12 +189,13 @@
 </Modal>
 
 <Modal @ref="EditarApuestaRef">
-    <ModalContent Centered>
+    <ModalContent Centered Size="ModalSize.Large">
         <ModalHeader>
-            <ModalTitle>Editar apuesta</ModalTitle>
+            <ModalTitle>Editar Quiniela</ModalTitle>
             <CloseButton />
         </ModalHeader>
         <ModalBody>
+            <Validations @ref="@EditValidationsRef" Model="@editarApuesta">
             <Field>
                     <FieldLabel>Alias</FieldLabel>
                     <TextEdit @bind-Text="@editarApuesta.Alias"/>
@@ -183,33 +204,39 @@
             {
                 @foreach (var prediccion in editarApuesta.Predicciones)
                 {
-                    <Row Class="justify-content-between">
-                        <Column ColumnSize="ColumnSize.Is4">
-                            <Figure Size="FigureSize.Is24x24" Class="d-flex">
-                                <FigureImage Source="@ObtenerBandera(prediccion.Partido.SiglasEquipoA)"   Rounded/>
-                                <p>@prediccion.Partido.EquipoA</p> 
-                            </Figure>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is4.OnWidescreen.Is3.OnMobile" Class="d-flex justify-content-end">
+                     <span class="paises" style="margin-right:2px;">@prediccion.Partido.EquipoA</span> 
+                       <Figure class="imagen" Size="FigureSize.Is24x24">
+                            <FigureImage Source="@ObtenerBandera(prediccion.Partido.SiglasEquipoA)"   Rounded/>
+                       </Figure>
                         </Column>
-                        <Column ColumnSize="ColumnSize.Is2">
+                        <Column ColumnSize="ColumnSize.Is2.OnWidescreen.Is3.OnMobile">
+                            <Validation>
                             <Field>
-                                <NumericEdit @bind-Value="@prediccion.PrediccionResultadoEquipoA"/>
+                                <NumericEdit Min=int.MinValue @bind-Value="@prediccion.PrediccionResultadoEquipoA"/>
                             </Field>
+                            </Validation>
                         </Column>
-                        <Column ColumnSize="ColumnSize.Is2">
+                        <Column ColumnSize="ColumnSize.Is2.OnWidescreen.Is3.OnMobile">
+                            <Validation>
                             <Field>
-                                <NumericEdit @bind-Value="@prediccion.PrediccionResultadoEquipoB"/>
+                                <NumericEdit Min=int.MinValue @bind-Value="@prediccion.PrediccionResultadoEquipoB"/>
                             </Field>
+                            </Validation>
                         </Column>
-                        <Column ColumnSize="ColumnSize.Is4">
-                            <Figure Size="FigureSize.Is24x24" Class="d-flex">
-                                <FigureImage Source="@ObtenerBandera(prediccion.Partido.SiglasEquipoB)"   Rounded/>
-                                <p>@prediccion.Partido.EquipoB</p> 
-                            </Figure>
+                         <Column ColumnSize="ColumnSize.Is4.OnWidescreen.Is3.OnMobile" Class="d-flex justify-content-start">
+                     
+                       <Figure class="imagen" Size="FigureSize.Is24x24">
+                            <FigureImage Source="@ObtenerBandera(prediccion.Partido.SiglasEquipoB)"   Rounded/>
+                       </Figure>
+                       <span class="paises" style="margin-left:2px;">@prediccion.Partido.EquipoB</span> 
                         </Column>
                     </Row>
                 }
 
             }
+            </Validations>
         </ModalBody>
         <ModalFooter>
             <Button Color="Color.Secondary" Clicked="@CloseEditarApuestaModal">Cerrar</Button>
@@ -218,3 +245,18 @@
     </ModalContent>
 </Modal>
 
+    <Modal @ref="EliminarApuestaRef">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>Eliminar Quiniela</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+             <h6>¿Seguro que desea eliminar la quiniela con alias: @eliminarApuesta.Alias?</h6>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@CloseEliminarApuestaModal">Cerrar</Button>
+            <Button Color="Color.Primary" Clicked="@DeleteApuesta">Eliminar</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>

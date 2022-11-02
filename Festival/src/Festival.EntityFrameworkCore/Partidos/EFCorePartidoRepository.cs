@@ -26,9 +26,8 @@ namespace Festival.Partidos
         {
             var dbContext = await GetDbContextAsync();
             var partidos = dbContext.Partidos
-                .Where(x=> x.Tenant == CurrentTenant.Id)
-                .ToList();
-            return partidos;
+                .Where(x => x.Tenant == CurrentTenant.Id);
+            return await partidos.PageBy(0, int.MaxValue).ToListAsync();
         }
 
         public async Task<List<Partido>> GetPartidosDelDia()

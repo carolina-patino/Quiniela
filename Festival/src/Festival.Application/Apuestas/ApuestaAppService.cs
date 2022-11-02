@@ -19,14 +19,17 @@ namespace Festival.Apuestas
         private readonly IApuestaRepository _apuestaRepository;
         private readonly IRepository<Prediccion, Guid> _prediccionRepository;
         private readonly IRepository<Equipo, Guid> _equipoRepository;
+        private readonly IPrediccionAppService _prediccionAppService;
 
         public ApuestaAppService(IApuestaRepository apuestaRepository
             , IRepository<Prediccion, Guid> prediccionRepository
-            , IRepository<Equipo, Guid> equipoRepository)
+            , IRepository<Equipo, Guid> equipoRepository,
+            IPrediccionAppService prediccionAppService)
         {
             _apuestaRepository = apuestaRepository;
             _prediccionRepository = prediccionRepository;
             _equipoRepository = equipoRepository;
+            _prediccionAppService = prediccionAppService;
         }
 
         public async Task<PagedResultDto<ApuestaDto>> GetApuestas()
@@ -54,8 +57,6 @@ namespace Festival.Apuestas
 
                 dto.PuntosObtenidos = dto.Predicciones.Sum(pr => pr.PuntosObtenidos);
             }
-
-
             var totalCount = await _apuestaRepository.CountAsync();
 
             return new PagedResultDto<ApuestaDto>(
@@ -81,11 +82,11 @@ namespace Festival.Apuestas
                 prediccion.Partido.EquipoB = p.equipoB.Pais;
                 prediccion.Partido.SiglasEquipoA = p.equipoA.Siglas;
                 prediccion.Partido.SiglasEquipoB = p.equipoB.Siglas;
+                prediccion.Partido.Grupo = p.equipoA.Grupo;
                 return prediccion;
-            }).ToList();
+            }).OrderBy(p=> p.Partido.Grupo).ToList();
 
             apuestaDto.PuntosObtenidos = apuestaDto.Predicciones.Sum(pr => pr.PuntosObtenidos);
-
             return apuestaDto;
         }
 
@@ -100,6 +101,8 @@ namespace Festival.Apuestas
             return ObjectMapper.Map<Apuesta, ApuestaDto>(apuesta);
         }
 
+       
+
         public async Task<List<CreateUpdatePrediccionDto>>AgregarPredicciones(List<CreateUpdatePrediccionDto> predicciones)
         {
             var prediccionesDto = ObjectMapper.Map<List<CreateUpdatePrediccionDto>, List<Prediccion>>(predicciones);
@@ -110,7 +113,7 @@ namespace Festival.Apuestas
 
         }
 
-        public async Task<List<ApuestaDto>> GetRanking()
+        public async Task<PagedResultDto<ApuestaDto>> GetRanking()
         {
             var query = await _apuestaRepository.GetRanking();
             var apuestas = query.ToList();
@@ -121,7 +124,11 @@ namespace Festival.Apuestas
                 p.PuntosObtenidos = p.Predicciones.Sum(pr => pr.PuntosObtenidos);
                 return p;
              }).OrderByDescending(p => p.PuntosObtenidos).ToList();
-            return apuestasDto;
+            return new PagedResultDto<ApuestaDto>
+            {
+                TotalCount = apuestasDto.Count(),
+                Items = apuestasDto
+            };
         }
 
         public async Task EditarApuesta(ApuestaDto input)
@@ -135,6 +142,13 @@ namespace Festival.Apuestas
                 prediccion.PrediccionResultadoEquipoA = prediccionEditada.PrediccionResultadoEquipoA;
                 prediccion.PrediccionResultadoEquipoB = prediccionEditada.PrediccionResultadoEquipoB;
             }
+        }
+
+        public async Task DeleteApuesta(ApuestaDto input)
+        {
+            var ApuestaAEliminar = await _apuestaRepository.GetApuesta(input.Id);
+            var predicciones = _prediccionAppService.EliminarPredicciones(ApuestaAEliminar.Id);
+            await _apuestaRepository.DeleteAsync(ApuestaAEliminar);
         }
 
         public async Task<PremioDto> GetTotalPremio()

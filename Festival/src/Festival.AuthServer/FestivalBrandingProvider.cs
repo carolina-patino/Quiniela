@@ -6,5 +6,5 @@ namespace Festival;
 [Dependency(ReplaceServices = true)]
 public class FestivalBrandingProvider : DefaultBrandingProvider
 {
-    public override string AppName => "Festival";
+    public override string AppName => "Tu Gooolazo";
 }

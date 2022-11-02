@@ -16,7 +16,7 @@ using Festival.Permissions;
 
 namespace Festival.Blazor.Pages
 {
-    public partial class Apuestas
+    public partial class Apuestas: FestivalComponentBase
     {
         private readonly IApuestaAppService _apuestaAppService;
         private readonly IPartidoAppService _partidoAppService;
@@ -37,6 +37,9 @@ namespace Festival.Blazor.Pages
         private int TotalCount { get; set; }
         private string filtro { get; set; } = null;
 
+        private Validations EditValidationsRef;
+        private Validations CreateValidationsRef;
+
         //Nueva apuesta
         private Modal modalCreateRef;
         private CreateUpdateApuestaDto NuevaApuesta { get; set; } = new CreateUpdateApuestaDto();
@@ -48,6 +51,8 @@ namespace Festival.Blazor.Pages
 
         private bool PuedeCrearApuesta;
 
+        private bool PuedeEliminarApuesta;
+
         //Consultar detalle
 
         private Modal ConsultarApuestaRef;
@@ -55,6 +60,9 @@ namespace Festival.Blazor.Pages
 
         private Modal EditarApuestaRef;
         private ApuestaDto editarApuesta = new ApuestaDto();
+
+        private Modal EliminarApuestaRef;
+        private ApuestaDto eliminarApuesta = new ApuestaDto();
 
         private async Task GetApuestas()
         {
@@ -74,7 +82,7 @@ namespace Festival.Blazor.Pages
         }
         private async Task<Task> ShowCreateModal()
         {
-            partidos = await _partidoAppService.GetPartidosAsync();
+            partidos = (await _partidoAppService.GetPartidosAsync()).Items;
             predicciones = new List<CreateUpdatePrediccionDto>();
             foreach (var item in partidos)
             {
@@ -96,15 +104,25 @@ namespace Festival.Blazor.Pages
 
         private async Task AgregarAsync()
         {
-            ApuestaDto apuesta = await _apuestaAppService.CreateApuesta(NuevaApuesta);
-            foreach (var item in predicciones)
+            try
             {
-                item.ApuestaId= apuesta.Id;
+                if (await CreateValidationsRef.ValidateAll())
+                {
+                    ApuestaDto apuesta = await _apuestaAppService.CreateApuesta(NuevaApuesta);
+                    foreach (var item in predicciones)
+                    {
+                        item.ApuestaId = apuesta.Id;
+                    }
+                    await _apuestaAppService.AgregarPredicciones(predicciones);
+                    await _uiNotificationService.Success("La apuesta ha sido agregado exitosamente");
+                    await GetApuestas();
+                    await modalCreateRef.Hide();
+                }
             }
-            await _apuestaAppService.AgregarPredicciones(predicciones);
-            await _uiNotificationService.Success("La apuesta ha sido agregado exitosamente");
-            await GetApuestas();
-            await modalCreateRef.Hide();
+            catch (Exception ex)
+            {
+                await HandleErrorAsync(ex);
+            }
         }
 
         private async Task OpenConsultarApuestaModal(ApuestaDto input)
@@ -134,18 +152,55 @@ namespace Festival.Blazor.Pages
             EditarApuestaRef.Hide();
         }
 
+        private void CloseEliminarApuestaModal()
+        {
+            EliminarApuestaRef.Hide();
+        }
+
+        public async Task OpenEliminarApuestaModal(ApuestaDto input)
+        {
+            eliminarApuesta = input;
+            //await _apuestaAppService.DeleteApuesta(input);
+            await EliminarApuestaRef.Show();
+        }
+
         private async Task EditarApuesta()
         {
-            await _apuestaAppService.EditarApuesta(editarApuesta);
-            CloseEditarApuestaModal();
+            try
+            {
+                if (await EditValidationsRef.ValidateAll())
+                {
+                    await _apuestaAppService.EditarApuesta(editarApuesta);
+                    CloseEditarApuestaModal();
+                }
+            }
+            catch (Exception ex)
+            {
+                await HandleErrorAsync(ex);
+            }
+        }
+
+        private async Task DeleteApuesta()
+        {
+            try
+            {
+                await _apuestaAppService.DeleteApuesta(eliminarApuesta);
+                CloseEliminarApuestaModal();
+            }
+            catch (Exception ex)
+            {
+                await HandleErrorAsync(ex);
+            }
         }
 
         private async Task SetPermissionsAsync()
         {
             PuedeEditarApuesta = await AuthorizationService
-                .IsGrantedAsync(FestivalPermissions.Apuestas.Create);
+                .IsGrantedAsync(FestivalPermissions.Apuestas.Edit);
             PuedeCrearApuesta = await AuthorizationService
-                .IsGrantedAsync(FestivalPermissions.Partidos.CargarResultados);
+                .IsGrantedAsync(FestivalPermissions.Apuestas.Create);
+            PuedeEliminarApuesta = await AuthorizationService
+                .IsGrantedAsync(FestivalPermissions.Apuestas.Delete);
         }
 
         public string GetResultado(PartidoDto partido)

@@ -8,6 +8,7 @@
 @using Festival.Localization
 @using Microsoft.Extensions.Localization
 @using Volo.Abp.AspNetCore.Components.Web
+@using Festival.Blazor.Components
 @inject IStringLocalizer<FestivalResource> L
 @inject AbpBlazorMessageLocalizerHelper<FestivalResource> LH
 @inject IPartidoAppService PartidoAppService
@@ -32,7 +33,7 @@
         <DataGrid TItem="PartidoDto"
                   Data="partidos"
                   ReadData="OnDataGridReadAsync"
-                  ShowPager="true"
+                  ShowPager="false"
                   PageSize="6"
                   Responsive="true"
                   TotalItems="totalCount">
@@ -71,18 +72,20 @@
                                 Field="@nameof(PartidoDto.FechaPartido)"
                                 Caption="Fecha">
                 </DataGridColumn>
+                @if(PuedeCargarResultados){
+                
                 <DataGridEntityActionsColumn TItem="PartidoDto" @ref="@EntityActionsColumn">
                     <DisplayTemplate>
                         <EntityActions TItem="PartidoDto" EntityActionsColumn="@EntityActionsColumn">
                             <EntityAction TItem="PartidoDto"
                                           Clicked="() => OpenCargarResultadoModal(context)" 
                                           Visible=PuedeCargarResultados
-                                          Text="Cargar resultados">
+                                          Text="Cargar Resultados">
                             </EntityAction>
                         </EntityActions>
                     </DisplayTemplate>
                 </DataGridEntityActionsColumn>
-
+                }
             </DataGridColumns>
         </DataGrid>
     </CardBody>
@@ -149,38 +152,44 @@
     </ModalContent>
 </Modal>
 <Modal @ref="@modalCargarResultadoRef">
-    <ModalContent IsCentered="true">
+    <ModalContent IsCentered="true" Size="ModalSize.Large">
         <Form>
             <ModalHeader>
-                <ModalTitle>Cargar resultados</ModalTitle>
+                <ModalTitle>Cargar Resultados</ModalTitle>
                 <CloseButton Clicked="@HideCargarResultadoModal"/>
             </ModalHeader>
             <ModalBody>
-                <Validations @ref="@CreateValidationsRef" Model="@partido" ValidateOnLoad="false">
+                <Validations @ref="@EditValidationsRef" Model="@partido" ValidateOnLoad="false">
                     <Field>
                          <Row Class="justify-content-between">
-                            <Column ColumnSize="ColumnSize.Is4" Class="justify-content-end">
-                                    <Figure Size="FigureSize.Is24x24" Class="d-flex">
+                            <Column ColumnSize="ColumnSize.Is4" Class="justify-content-end d-flex">
+                                     <p style="font-size:14px;margin-right:2px;">@partido.EquipoA</p> 
+                                    <Figure Size="FigureSize.Is24x24" >
                                          <FigureImage Source="@ObtenerBandera(partido.SiglasEquipoA)"   Rounded/>
-                                         <p>@partido.EquipoA</p> 
                                      </Figure>
+                                      
                             </Column>
 
                             <Column ColumnSize="ColumnSize.Is2">
+                                <Validation>
                                <Field>
                                     <NumericEdit @bind-Value="@partido.ResultadoEquipoA"/>
                                 </Field>
+                                </Validation>
                             </Column>
                             <Column ColumnSize="ColumnSize.Is2">
+                                <Validation>
                                 <Field>
                                     <NumericEdit @bind-Value="@partido.ResultadoEquipoB"/>
                                 </Field>
+                                </Validation>
                             </Column>
-                            <Column ColumnSize="ColumnSize.Is4" Class="justify-content-start">
+                            <Column ColumnSize="ColumnSize.Is4" Class="justify-content-start d-flex">
                                 <Figure Size="FigureSize.Is24x24" Class="d-flex">
                                      <FigureImage Source="@ObtenerBandera(partido.SiglasEquipoB)"   Rounded/>
-                                     <p>@partido.EquipoB</p> 
+                                      
                                  </Figure>
+                                <p style="font-size:14px;margin-left:2px;">@partido.EquipoB</p>
                             </Column>
                         </Row>
                     </Field>

@@ -17,16 +17,19 @@ using Festival.Predicciones;
 
 namespace Festival.Blazor.Pages
 {
-    public partial class Partidos
+    public partial class Partidos: FestivalComponentBase
     {
         private CreateUpdatePartidoDto NuevoPartido { get; set; } = new CreateUpdatePartidoDto();
 
         private IReadOnlyList<PartidoDto> partidos { get; set; }
 
+        private Validations EditValidationsRef;
         private Validations CreateValidationsRef;
 
         private Modal modalCreateRef;
         private Modal modalCargarResultadoRef;
+
+        private int PageSize { get; } = LimitedResultRequestDto.DefaultMaxResultCount;
 
         private readonly IPartidoAppService _partidoAppService;
         private readonly IEquipoAppService _equipoAppService;
@@ -61,8 +64,6 @@ namespace Festival.Blazor.Pages
             _equipoAppService = equipoAppService;
             _uiNotificationService = uiNotificationService;
             _prediccionAppService = prediccionAppService;
-            _prediccionAppService = prediccionAppService;
-
         }
         protected override async Task OnInitializedAsync()
         {
@@ -80,8 +81,8 @@ namespace Festival.Blazor.Pages
         private async Task GetPartidos()
         {
             var result = await _partidoAppService.GetPartidosAsync();
-            partidos = result;
-            totalCount=partidos.Count;
+            partidos = result.Items;
+            totalCount=(int)result.TotalCount;
         }
         private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<PartidoDto> e)
         {
@@ -103,18 +104,27 @@ namespace Festival.Blazor.Pages
 
         private async Task AgregarAsync()
         {
-            if (await CreateValidationsRef.ValidateAll())
+            try
             {
-                await _partidoAppService.CreateAsync(NuevoPartido);
-                await _uiNotificationService.Success("El partido ha sido agregado exitosamente");
-                await GetPartidos();
-                await HideCreateModal();
-            }
-            else
+                if (await CreateValidationsRef.ValidateAll())
+                {
+                    await _partidoAppService.CreateAsync(NuevoPartido);
+                    await _uiNotificationService.Success("El partido ha sido agregado exitosamente");
+                    await GetPartidos();
+                    await HideCreateModal();
+                }
+                else
+                {
+                    await _uiNotificationService.Success("El partido ha sido agregado exitosamente");
+                }
+            }catch(Exception ex)
             {
-                await _uiNotificationService.Success("El partido ha sido agregado exitosamente");
+                await HandleErrorAsync(ex);
             }
+            
         }
+
+
 
         private Task ShowCreateModal()
         {
@@ -158,11 +168,26 @@ namespace Festival.Blazor.Pages
 
         private async Task CargarResultado()
         {
-            await _partidoAppService.CargarResultados(partido);
-            await _uiNotificationService.Success("El resultado ha sido cargado exitosamente");
-            await GetPartidos();
-            await HideCargarResultadoModal();
-            await _prediccionAppService.CalcularPuntos(partido);
+            try
+            {
+                if (await EditValidationsRef.ValidateAll())
+                {
+                    await _partidoAppService.CargarResultados(partido);
+                    await _uiNotificationService.Success("El resultado ha sido cargado exitosamente");
+                    await GetPartidos();
+                    await HideCargarResultadoModal();
+                    await _prediccionAppService.CalcularPuntos(partido);
+                }
+                else
+                {
+                    await _uiNotificationService.Error("Sólo puede cargar resultados mayores a 0");
+                }
+            }
+            catch (Exception ex)
+            {
+                await HandleErrorAsync(ex);
+            }
+
 
         }
 

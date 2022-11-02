@@ -20,6 +20,8 @@ public partial class Index
     private readonly IPartidoAppService _partidoAppService;
     private IReadOnlyList<ApuestaDto> apuestas { get; set; }
 
+    private int TotalCount;
+
     private IReadOnlyList<PartidoDto> partidos { get; set; }
 
     private Modal ConsultarApuestaRef;
@@ -43,7 +45,8 @@ public partial class Index
 
     private async Task GetRanking()
     {
-        apuestas = await _apuestaAppService.GetRanking();
+        apuestas = (await _apuestaAppService.GetRanking()).Items;
+        TotalCount = apuestas.Count;
     }
 
     private async Task GetPartidosDelDia(DataGridReadDataEventArgs<PartidoDto> e)
