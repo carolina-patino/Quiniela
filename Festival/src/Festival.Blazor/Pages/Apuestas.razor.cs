@@ -51,6 +51,8 @@ namespace Festival.Blazor.Pages
 
         private bool PuedeCrearApuesta;
 
+        private bool PuedeEliminarApuesta;
+
         //Consultar detalle
 
         private Modal ConsultarApuestaRef;
@@ -58,6 +60,9 @@ namespace Festival.Blazor.Pages
 
         private Modal EditarApuestaRef;
         private ApuestaDto editarApuesta = new ApuestaDto();
+
+        private Modal EliminarApuestaRef;
+        private ApuestaDto eliminarApuesta = new ApuestaDto();
 
         private async Task GetApuestas()
         {
@@ -147,17 +152,40 @@ namespace Festival.Blazor.Pages
             EditarApuestaRef.Hide();
         }
 
+        private void CloseEliminarApuestaModal()
+        {
+            EliminarApuestaRef.Hide();
+        }
+
+        public async Task OpenEliminarApuestaModal(ApuestaDto input)
+        {
+            eliminarApuesta = input;
+            //await _apuestaAppService.DeleteApuesta(input);
+            await EliminarApuestaRef.Show();
+        }
+
         private async Task EditarApuesta()
         {
             try
             {
-
-
                 if (await EditValidationsRef.ValidateAll())
                 {
                     await _apuestaAppService.EditarApuesta(editarApuesta);
                     CloseEditarApuestaModal();
                 }
+            }
+            catch (Exception ex)
+            {
+                await HandleErrorAsync(ex);
+            }
+        }
+
+        private async Task DeleteApuesta()
+        {
+            try
+            {
+                await _apuestaAppService.DeleteApuesta(eliminarApuesta);
+                CloseEliminarApuestaModal();
             }
             catch (Exception ex)
             {
@@ -171,6 +199,8 @@ namespace Festival.Blazor.Pages
                 .IsGrantedAsync(FestivalPermissions.Apuestas.Edit);
             PuedeCrearApuesta = await AuthorizationService
                 .IsGrantedAsync(FestivalPermissions.Apuestas.Create);
+            PuedeEliminarApuesta = await AuthorizationService
+                .IsGrantedAsync(FestivalPermissions.Apuestas.Delete);
         }
 
         public string GetResultado(PartidoDto partido)

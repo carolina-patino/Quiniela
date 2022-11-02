@@ -22,6 +22,8 @@ namespace Festival.Apuestas
         Task EditarApuesta(ApuestaDto input);
 
         Task<PremioDto> GetTotalPremio();
+
+        Task DeleteApuesta(ApuestaDto input);
     }
 }
 

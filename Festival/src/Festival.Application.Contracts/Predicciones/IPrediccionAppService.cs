@@ -1,4 +1,5 @@
-﻿using Festival.Partidos;
+﻿using Festival.Apuestas;
+using Festival.Partidos;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,5 +17,9 @@ namespace Festival.Predicciones
            CreateUpdatePrediccionDto> //Used to create/update a book
     {
         Task CalcularPuntos(PartidoDto Partido);
+
+        Task EliminarPredicciones(Guid ApuestaId);
+
+        
     }
 }

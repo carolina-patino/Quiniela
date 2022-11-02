@@ -19,14 +19,17 @@ namespace Festival.Apuestas
         private readonly IApuestaRepository _apuestaRepository;
         private readonly IRepository<Prediccion, Guid> _prediccionRepository;
         private readonly IRepository<Equipo, Guid> _equipoRepository;
+        private readonly IPrediccionAppService _prediccionAppService;
 
         public ApuestaAppService(IApuestaRepository apuestaRepository
             , IRepository<Prediccion, Guid> prediccionRepository
-            , IRepository<Equipo, Guid> equipoRepository)
+            , IRepository<Equipo, Guid> equipoRepository,
+            IPrediccionAppService prediccionAppService)
         {
             _apuestaRepository = apuestaRepository;
             _prediccionRepository = prediccionRepository;
             _equipoRepository = equipoRepository;
+            _prediccionAppService = prediccionAppService;
         }
 
         public async Task<PagedResultDto<ApuestaDto>> GetApuestas()
@@ -98,6 +101,8 @@ namespace Festival.Apuestas
             return ObjectMapper.Map<Apuesta, ApuestaDto>(apuesta);
         }
 
+       
+
         public async Task<List<CreateUpdatePrediccionDto>>AgregarPredicciones(List<CreateUpdatePrediccionDto> predicciones)
         {
             var prediccionesDto = ObjectMapper.Map<List<CreateUpdatePrediccionDto>, List<Prediccion>>(predicciones);
@@ -137,6 +142,13 @@ namespace Festival.Apuestas
                 prediccion.PrediccionResultadoEquipoA = prediccionEditada.PrediccionResultadoEquipoA;
                 prediccion.PrediccionResultadoEquipoB = prediccionEditada.PrediccionResultadoEquipoB;
             }
+        }
+
+        public async Task DeleteApuesta(ApuestaDto input)
+        {
+            var ApuestaAEliminar = await _apuestaRepository.GetApuesta(input.Id);
+            var predicciones = _prediccionAppService.EliminarPredicciones(ApuestaAEliminar.Id);
+            await _apuestaRepository.DeleteAsync(ApuestaAEliminar);
         }
 
         public async Task<PremioDto> GetTotalPremio()

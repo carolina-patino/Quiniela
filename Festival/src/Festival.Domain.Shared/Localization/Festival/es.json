@@ -4,7 +4,7 @@
     "Menu:Home": "Inicio",
     "Menu:ContactUs": "Contáctenos",
     "Menu:ArticleSample": "Muestra de artículo",
-    "Home": "Hogar",
+    "Home": "Inicio",
     "Welcome": "Bienvenido",
     "LongWelcomeMessage": "Bienvenido a la aplicacion. Este es un proyecto de inicio basado en el marco ABP. Para obtener mas informacion, visite abp.io.",
     "EndDate": "Fecha de finalizaci�n",
@@ -25,6 +25,7 @@
     "NewsletterHeader": "Suscríbete a la newsletter!",
     "NewsletterInfo": "Obtenga información sobre los últimos acontecimientos.",
     "NewsletterPreference_Default": "Boletín de noticias predeterminado",
-    "NewsletterPrivacyAcceptMessage": "Acepto la <a href='/privacy-policy'> Política de privacidad </a>."
+    "NewsletterPrivacyAcceptMessage": "Acepto la <a href='/privacy-policy'> Política de privacidad </a>.",
+    "DeleteConfirmationMessage": "Seguro quiere eliminar la quiniela?"
   }
 }

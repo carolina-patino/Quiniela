@@ -44,7 +44,7 @@
                 </DataGridColumn>
                 <DataGridColumn TItem="ApuestaDto"
                                 Field="@nameof(ApuestaDto.PuntosObtenidos)"
-                                Caption="Puntos obtenidos">
+                                Caption="Puntos Obtenidos">
                 </DataGridColumn>
                 <DataGridEntityActionsColumn TItem="ApuestaDto" @ref="@EntityActionsColumn">
                     <DisplayTemplate>
@@ -57,6 +57,11 @@
                                           Clicked="() => OpenEditarApuestaModal(context)"
                                           Visible=PuedeEditarApuesta
                                           Text="Editar Quiniela">
+                            </EntityAction>
+                            <EntityAction TItem="ApuestaDto"
+                                          Clicked="() => OpenEliminarApuestaModal(context)"
+                                          Visible=PuedeEliminarApuesta
+                                          Text="Eliminar Quiniela">
                             </EntityAction>
                         </EntityActions>
                     </DisplayTemplate>
@@ -236,6 +241,22 @@
         <ModalFooter>
             <Button Color="Color.Secondary" Clicked="@CloseEditarApuestaModal">Cerrar</Button>
             <Button Color="Color.Primary" Clicked="EditarApuesta">Guardar</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+    <Modal @ref="EliminarApuestaRef">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>Eliminar Quiniela</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+             <h6>¿Seguro que desea eliminar la quiniela con alias: @eliminarApuesta.Alias?</h6>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@CloseEliminarApuestaModal">Cerrar</Button>
+            <Button Color="Color.Primary" Clicked="@DeleteApuesta">Eliminar</Button>
         </ModalFooter>
     </ModalContent>
 </Modal>

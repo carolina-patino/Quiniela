@@ -25,6 +25,7 @@ public static class FestivalPermissions
         public const string Create = Default + ".Create";
         public const string Edit = Default + ".Edit";
         public const string Ranking = Default + ".Ranking";
+        public const string Delete = Default + ".Delete";
     }
 
     //Add your own permission names. Example:

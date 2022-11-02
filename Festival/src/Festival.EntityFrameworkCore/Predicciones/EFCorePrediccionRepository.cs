@@ -32,5 +32,15 @@ namespace Festival.Predicciones
                 .ToList();
             return predicciones;
         }
+
+        public async Task<List<Prediccion>> GetPrediccionesPorApuesta(Guid ApuestaId)
+        {
+            var dbContext = await GetDbContextAsync();
+            var predicciones = dbContext.Prediccion
+                .Where(x => x.Tenant == CurrentTenant.Id)
+                .Where(x => x.Apuesta.Id == ApuestaId)
+                .ToList();
+            return predicciones;
+        }
     }
 }
