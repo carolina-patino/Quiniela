@@ -23,7 +23,7 @@ namespace Festival.Apuestas
 
         Task<PremioDto> GetTotalPremio();
 
-        Task DeleteApuesta(ApuestaDto input);
+        Task DeleteApuesta(Guid ApuestaId);
     }
 }
 

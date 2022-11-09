@@ -184,7 +184,7 @@ namespace Festival.Blazor.Pages
         {
             try
             {
-                await _apuestaAppService.DeleteApuesta(eliminarApuesta);
+                await _apuestaAppService.DeleteApuesta(eliminarApuesta.Id);
                 CloseEliminarApuestaModal();
             }
             catch (Exception ex)

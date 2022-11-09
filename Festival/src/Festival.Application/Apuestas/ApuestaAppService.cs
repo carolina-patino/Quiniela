@@ -144,9 +144,9 @@ namespace Festival.Apuestas
             }
         }
 
-        public async Task DeleteApuesta(ApuestaDto input)
+        public async Task DeleteApuesta(Guid ApuestaId)
         {
-            var ApuestaAEliminar = await _apuestaRepository.GetApuesta(input.Id);
+            var ApuestaAEliminar = await _apuestaRepository.GetApuesta(ApuestaId);
             var predicciones = _prediccionAppService.EliminarPredicciones(ApuestaAEliminar.Id);
             await _apuestaRepository.DeleteAsync(ApuestaAEliminar);
         }
