@@ -138,7 +138,10 @@ namespace Festival.Blazor.Pages
 
         public string ObtenerBandera(string siglas)
         {
-            return "https://countryflagsapi.com/png/" + siglas;
+            // return "https://countryflagsapi.com/png/" + siglas;
+
+            var imagen = siglas.ToLower() + ".png";
+            return "https://flagcdn.com/20x15/" + imagen;
         }
 
         public async Task OpenEditarApuestaModal(ApuestaDto input)
@@ -186,6 +189,7 @@ namespace Festival.Blazor.Pages
             {
                 await _apuestaAppService.DeleteApuesta(eliminarApuesta.Id);
                 CloseEliminarApuestaModal();
+                await GetApuestas();
             }
             catch (Exception ex)
             {

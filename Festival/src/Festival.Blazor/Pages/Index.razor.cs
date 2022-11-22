@@ -10,6 +10,7 @@ using Festival.Partidos;
 using System;
 using Festival.Permissions;
 using Microsoft.AspNetCore.Authorization;
+using static System.Net.WebRequestMethods;
 
 namespace Festival.Blazor.Pages;
 
@@ -68,7 +69,10 @@ public partial class Index
 
     public string ObtenerBandera(string siglas)
     {
-        return "https://countryflagsapi.com/png/" + siglas;
+        // return "https://countryflagsapi.com/png/" + siglas;
+
+        var imagen = siglas.ToLower() + ".png";
+        return "https://flagcdn.com/20x15/" + imagen;
     }
 
     public string GetResultado(PartidoDto partido)

@@ -42,6 +42,10 @@ namespace Festival.Predicciones
             {
                 equipoGanador = "B";
             }
+            else if (Partido.ResultadoEquipoA == Partido.ResultadoEquipoB)
+            {
+                equipoGanador = "E";
+            }
             
             foreach (var prediccion in predicciones)
             {
@@ -55,6 +59,15 @@ namespace Festival.Predicciones
                     prediccion.PuntosObtenidos = 1;
                 }
                 else if (equipoGanador == "B" && prediccion.PrediccionResultadoEquipoB > prediccion.PrediccionResultadoEquipoA)
+                {
+                    prediccion.PuntosObtenidos = 1;
+                }
+                else if (equipoGanador == "E" && Partido.ResultadoEquipoA == prediccion.PrediccionResultadoEquipoA 
+                    && Partido.ResultadoEquipoB == prediccion.PrediccionResultadoEquipoB)
+                {
+                    prediccion.PuntosObtenidos = 3;
+                }
+                else if (equipoGanador == "E" && prediccion.PrediccionResultadoEquipoA == prediccion.PrediccionResultadoEquipoB)
                 {
                     prediccion.PuntosObtenidos = 1;
                 }

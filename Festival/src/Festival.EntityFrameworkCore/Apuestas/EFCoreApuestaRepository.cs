@@ -64,7 +64,7 @@ namespace Festival.Apuestas
                        Alias = apuesta.Alias,
                        EstaPagada = apuesta.EstaPagada,
                        Predicciones = apuesta.Predicciones,
-                       NombreUsuario = apuestaResultado.Name + apuestaResultado.Surname,
+                       NombreUsuario = apuestaResultado.Name + ' ' + apuestaResultado.Surname,
                        CorreoUsuario = apuestaResultado.Email
                    };
                     

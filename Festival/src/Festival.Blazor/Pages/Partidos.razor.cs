@@ -149,7 +149,10 @@ namespace Festival.Blazor.Pages
 
         public string ObtenerBandera(string siglas)
         {
-            return "https://countryflagsapi.com/png/" + siglas;
+            //return "https://countryflagsapi.com/png/" + siglas;
+
+            var imagen = siglas + ".png";
+            return "https://flagcdn.com/20x15/" + imagen.ToLower();
         }
 
         public string GetResultado(Guid Id)
